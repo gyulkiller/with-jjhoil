@@ -58,6 +58,17 @@
     .card-track::-webkit-scrollbar-track { background: transparent; }
     .card-track::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius: 999px; }
 
+    /* 좌우 내비 버튼 */
+    .nav-controls { position: absolute; right: 24px; bottom: 6px; display: flex; gap: 10px; z-index: 5; }
+    .nav-btn {
+      width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(0,0,0,.12);
+      background: #ffffff; color: #000; display: grid; place-items: center; cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,.12);
+      transition: transform .15s ease, background .2s ease;
+    }
+    .nav-btn:hover { transform: translateY(-1px); background: #f8f8f8; }
+    .nav-btn:disabled { opacity: .4; cursor: default; transform: none; }
+
     /* 개별 카드 */
     .card {
       position: relative;
@@ -71,6 +82,15 @@
     }
     @media (min-width: 960px) {
       .card { flex-basis: 360px; }
+    }
+
+    /* 모바일 최적화: 카드가 화면을 다 채우지 않고 옆 카드가 보이도록 */
+    @media (max-width: 640px) {
+      .card-track { padding: 16px 16px 28px; gap: 16px; scroll-padding-left: 16px; }
+      .card { flex: 0 0 82vw; height: 520px; }
+      .card-headings { min-height: 120px; }
+      .title { font-size: 24px; }
+      .nav-controls { left: 50%; right: auto; transform: translateX(-50%); bottom: 0; }
     }
 
     .card-inner {
@@ -210,6 +230,15 @@
         </div>
       </article>
     </div>
+    <!-- 좌우 내비 버튼 -->
+    <div class="nav-controls" aria-hidden="false">
+      <button class="nav-btn" id="prevBtn" aria-label="이전 카드">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 6l-6 6 6 6" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="nav-btn" id="nextBtn" aria-label="다음 카드">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 6l6 6-6 6" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
   </section>
 
   <!-- Modals -->
@@ -307,6 +336,45 @@
         document.querySelectorAll('.modal.open').forEach(close);
       }
     });
+
+    // 좌우 내비 버튼 동작: 현재 스크롤 위치 기준으로 다음/이전 카드로 스냅
+    const track = document.querySelector('.card-track');
+    const cards = Array.from(document.querySelectorAll('.card'));
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    function updateButtons() {
+      const scrollLeft = track.scrollLeft;
+      const maxScroll = track.scrollWidth - track.clientWidth - 1;
+      prevBtn.disabled = scrollLeft <= 0;
+      nextBtn.disabled = scrollLeft >= maxScroll;
+    }
+
+    function scrollToIndex(index) {
+      const clamped = Math.max(0, Math.min(index, cards.length - 1));
+      cards[clamped].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+      // 버튼 상태 갱신을 약간 지연
+      setTimeout(updateButtons, 400);
+    }
+
+    function getCurrentIndex() {
+      const center = track.scrollLeft + track.clientWidth / 2;
+      let bestIdx = 0;
+      let bestDist = Infinity;
+      cards.forEach((card, i) => {
+        const rect = card.getBoundingClientRect();
+        const cardCenter = rect.left + rect.width / 2 + track.scrollLeft - track.getBoundingClientRect().left;
+        const dist = Math.abs(cardCenter - center);
+        if (dist < bestDist) { bestDist = dist; bestIdx = i; }
+      });
+      return bestIdx;
+    }
+
+    prevBtn.addEventListener('click', () => scrollToIndex(getCurrentIndex() - 1));
+    nextBtn.addEventListener('click', () => scrollToIndex(getCurrentIndex() + 1));
+    track.addEventListener('scroll', () => { requestAnimationFrame(updateButtons); });
+    window.addEventListener('resize', updateButtons);
+    updateButtons();
   </script>
 </body>
 </html>
