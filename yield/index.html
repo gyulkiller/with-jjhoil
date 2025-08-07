@@ -43,7 +43,8 @@
     /* 카드 트랙 (가로 스크롤 + 스냅) */
     .track-wrap {
       position: relative;
-      overflow: hidden;
+      overflow: visible; /* 하단 컨트롤을 카드 영역 밖에 배치할 수 있도록 */
+      padding-bottom: 20px; /* 컨트롤을 위한 여백 */
     }
     .card-track {
       display: flex;
@@ -59,7 +60,13 @@
     .card-track::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius: 999px; }
 
     /* 좌우 내비 버튼 */
-    .nav-controls { position: absolute; right: 24px; bottom: 6px; display: flex; gap: 10px; z-index: 5; }
+    .nav-controls {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -28px; /* 카드 영역 밖, 더 아래 */
+      display: flex; gap: 10px; z-index: 5;
+    }
     .nav-btn {
       width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(0,0,0,.12);
       background: #ffffff; color: #000; display: grid; place-items: center; cursor: pointer;
@@ -90,7 +97,7 @@
       .card { flex: 0 0 82vw; height: 520px; }
       .card-headings { min-height: 120px; }
       .title { font-size: 24px; }
-      .nav-controls { left: 50%; right: auto; transform: translateX(-50%); bottom: 0; }
+      .nav-controls { bottom: -20px; }
     }
 
     .card-inner {
@@ -153,6 +160,9 @@
     .dialog-visual { border-radius: 16px; overflow: hidden; margin-bottom: 16px; background:#f5f5f7 }
     .dialog-visual img { width: 100%; height: auto; display:block; }
     .dialog-text { color: #333; line-height: 1.7; font-size: 16px; }
+    .dialog-text h4 { font-size: 18px; font-weight: 700; margin: 12px 0 6px; }
+    .dialog-text ul, .dialog-text ol { margin: 8px 0 12px 1.2rem; padding-left: 1.2rem; }
+    .dialog-text li { margin: 4px 0; }
 
     .caption { color: var(--muted); font-size: 13px; margin-top: 8px; }
   </style>
@@ -160,7 +170,7 @@
 <body>
   <header class="site-header">
     <h1>양심깨박</h1>
-    <p>당신의 선택은 자연에 대한 양보입니다.</p>
+    <p>양심깨박의 선택, 자연에 대한 양보입니다.</p>
   </header>
 
   <section class="track-wrap">
@@ -245,7 +255,7 @@
   <div class="modal" id="modal-1" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
     <div class="dialog">
       <div class="dialog-header">
-        <h3 class="dialog-title" id="modal-1-title">대중교통을 보다 간편하게.</h3>
+        <h3 class="dialog-title" id="modal-1-title">양심깨박 화분 비료</h3>
         <button class="close-btn" data-close>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6L6 18" stroke="#000" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
@@ -253,8 +263,24 @@
       <div class="dialog-body">
         <div class="dialog-visual"><img src="image/6b3eedc3-d5a6-4559-b3e3-92e0af85af60.png" alt="Apple Pay 교통카드 시각" /></div>
         <div class="dialog-text">
-          톡 대면 바로 탑승. 이제 iPhone 또는 Apple Watch에서 Apple Pay로 대중교통 요금을 빠르고 간편하게 결제할 수 있습니다. 익스프레스 모드 덕분에 Face ID 또는 Touch ID도 필요 없습니다. 기기를 카드 리더기에 대기만 하면 됩니다.
-          <div class="caption">이미지는 예시이며 실제 내용과 다를 수 있습니다.</div>
+          <p>양심깨박을 활용한 자연 친화적 화분 비료입니다.</p>
+
+          <h4>재료</h4>
+          <ul>
+            <li>양심깨박 1컵</li>
+            <li>흙 2컵</li>
+            <li>물 1컵</li>
+            <li>화분 1개</li>
+          </ul>
+
+          <h4>만드는 방법</h4>
+          <ol>
+            <li>양심깨박을 잘게 부숴줍니다.</li>
+            <li>화분에 흙을 넣고 양심깨박을 섞어줍니다.</li>
+            <li>물을 적당히 뿌려서 흙을 촉촉하게 만듭니다.</li>
+            <li>식물을 심고 정기적으로 물을 줍니다.</li>
+          </ol>
+          <div class="caption">Tip: 물 주기와 양은 식물 종류와 계절에 맞게 조절하세요.</div>
         </div>
       </div>
     </div>
@@ -346,25 +372,24 @@
     function updateButtons() {
       const scrollLeft = track.scrollLeft;
       const maxScroll = track.scrollWidth - track.clientWidth - 1;
-      prevBtn.disabled = scrollLeft <= 0;
-      nextBtn.disabled = scrollLeft >= maxScroll;
+      const tol = 2;
+      prevBtn.disabled = scrollLeft <= tol;
+      nextBtn.disabled = scrollLeft >= maxScroll - tol;
     }
 
     function scrollToIndex(index) {
       const clamped = Math.max(0, Math.min(index, cards.length - 1));
-      cards[clamped].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
-      // 버튼 상태 갱신을 약간 지연
+      const targetLeft = cards[clamped].offsetLeft; // 트랙 기준 카드의 좌측 위치
+      track.scrollTo({ left: targetLeft, behavior: 'smooth' });
       setTimeout(updateButtons, 400);
     }
 
     function getCurrentIndex() {
-      const center = track.scrollLeft + track.clientWidth / 2;
+      const left = track.scrollLeft;
       let bestIdx = 0;
       let bestDist = Infinity;
       cards.forEach((card, i) => {
-        const rect = card.getBoundingClientRect();
-        const cardCenter = rect.left + rect.width / 2 + track.scrollLeft - track.getBoundingClientRect().left;
-        const dist = Math.abs(cardCenter - center);
+        const dist = Math.abs(card.offsetLeft - left);
         if (dist < bestDist) { bestDist = dist; bestIdx = i; }
       });
       return bestIdx;
