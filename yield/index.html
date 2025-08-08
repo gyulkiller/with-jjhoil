@@ -196,7 +196,7 @@
     .values-header p { margin: 0 0 24px; color: var(--muted); font-size: clamp(14px, 1.6vw, 18px); }
     .values-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
     .value-card { background: #fff; border-radius: 20px; padding: 28px; box-shadow: 0 10px 30px rgba(0,0,0,.08); border: 1px solid rgba(0,0,0,.06); display: flex; flex-direction: column; gap: 10px; }
-    .v-icon { font-size: 28px; filter:grayscale(100%) }
+    .v-icon { font-size: 28px; filter:grayscale(50%) }
     .v-title { font-size: 18px; margin: 0; }
     .v-desc { margin: 0; color: #333; line-height: 1.6; }
 
@@ -228,8 +228,7 @@
       margin: 80px auto 120px;
       padding: 48px;
       border-radius: 28px;
-      background: linear-gradient(180deg, #f5fff7 0%, #e8fff0 100%);
-      border: 1px solid rgba(0,0,0,.06);
+      background: linear-gradient(135deg, rgba(76,175,80,0.08) 0%, rgba(129,199,132,0.05) 50%, rgba(165,214,167,0.03) 100%);
       box-shadow: 0 20px 60px rgba(0,0,0,.08);
       text-align: center;
     }
@@ -309,7 +308,93 @@
 
   <section class="track-wrap">
     <div class="card-track">
-      <!-- Card 1 -->
+        
+                                   <!-- Card 2 -->
+          <article class="card" aria-labelledby="c2-title" data-target="modal-2">
+          <div class="card-inner">
+            <div class="card-headings">
+              <div class="eyebrow">양심깨박 샐러드</div>
+              <h2 class="title" id="c2-title">자연에 대한 존중으로 만든 신선함</h2>
+            </div>
+            <div class="visual">
+              <img src="image/Untitled-2.png" alt="양심깨박 샐러드"/>
+            </div>
+            <div class="glow"></div>
+            <button class="more-btn" aria-label="더 보기" data-target="modal-2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="card" aria-labelledby="c3-title" data-target="modal-3">
+          <div class="card-inner">
+            <div class="card-headings">
+              <div class="eyebrow">양심깨박 죽</div>
+              <h2 class="title" id="c3-title">한 숟갈마다 느껴지는 배려</h2>
+            </div>
+            <div class="visual">
+              <img src="image/Untitled-1.png" alt="인물 사진" />
+            </div>
+            <div class="glow"></div>
+            <button class="more-btn" aria-label="더 보기" data-target="modal-3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+        </article>
+       
+       <!-- Card 4: 볶음밥 -->
+       <article class="card" aria-labelledby="c4-title" data-target="modal-4">
+         <div class="card-inner">
+           <div class="card-headings">
+             <div class="eyebrow">양심깨박 볶음밥</div>
+             <h2 class="title" id="c4-title">따뜻한 한끼</h2>
+           </div>
+           <div class="visual">
+             <img src="image/Untitled-3.png" alt="따끈한 볶음밥" />
+           </div>
+           <div class="glow"></div>
+           <button class="more-btn" aria-label="더 보기" data-target="modal-4">
+             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+           </button>
+         </div>
+       </article>
+
+       <!-- Card 5: 양심깨박 소스 -->
+       <article class="card" aria-labelledby="c5-title" data-target="modal-5">
+         <div class="card-inner">
+           <div class="card-headings">
+             <div class="eyebrow">양심깨박 소스</div>
+             <h2 class="title" id="c5-title">요리의 핵심이 되다.</h2>
+           </div>
+           <div class="visual">
+             <img src="image/recipe4.png" alt="양심깨박 소스" />
+           </div>
+           <div class="glow"></div>
+           <button class="more-btn" aria-label="더 보기" data-target="modal-5">
+             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+           </button>
+         </div>
+       </article>
+
+       <!-- Card 6: 양심깨박 단호박 쿠키 (반려견용) -->
+       <article class="card" aria-labelledby="c6-title" data-target="modal-6">
+         <div class="card-inner">
+           <div class="card-headings">
+             <div class="eyebrow">반려견 수제 간식 양심깨박 단호박 쿠키</div>
+             <h2 class="title" id="c6-title">우리 강아지를 위한, 양심이 만든 쿠키</h2>
+           </div>
+           <div class="visual">
+             <img src="image/Untitled-4.png" alt="양심깨박 단호박 쿠키" />
+           </div>
+           <div class="glow"></div>
+           <button class="more-btn" aria-label="더 보기" data-target="modal-6">
+             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+           </button>
+         </div>
+       </article>
+
+      <!-- Card 1: 양심깨박 화분 비료 (마지막으로 이동) -->
       <article class="card" aria-labelledby="c1-title" data-target="modal-1">
         <div class="card-inner">
           <div class="card-headings">
@@ -317,7 +402,7 @@
             <h2 class="title" id="c1-title">생명을 일으키는 밑거름</h2>
           </div>
           <div class="visual">
-            <img src="image/6b3eedc3-d5a6-4559-b3e3-92e0af85af60.png" alt="iPhone과 Apple Watch 이미지" />
+            <img src="image/6b3eedc3-d5a6-4559-b3e3-92e0af85af60.png" />
           </div>
           <div class="glow"></div>
           <button class="more-btn" aria-label="더 보기" data-target="modal-1">
@@ -326,86 +411,9 @@
         </div>
       </article>
 
-      <!-- Card 2 -->
-      <article class="card" aria-labelledby="c2-title" style="background:#0b0b0b; color:#fff;" data-target="modal-2">
-        <div class="card-inner">
-          <div class="card-headings">
-            <div class="eyebrow" style="color:#a1a1a6">양심깨박 샐러드</div>
-            <h2 class="title" id="c2-title" style="color:#fff">자연에 대한 존중으로 만든 신선함</h2>
-          </div>
-          <div class="visual">
-            <img src="image/Untitled-2.png" alt="다크 모드에서 iPhone을 들고 있는 손" />
-          </div>
-          <button class="more-btn" aria-label="더 보기" data-target="modal-2">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          </button>
-        </div>
-      </article>
-
-      <!-- Card 3 -->
-      <article class="card" aria-labelledby="c3-title" style="background:#1e3a68; color:#fff;" data-target="modal-3">
-        <div class="card-inner">
-          <div class="card-headings">
-            <div class="eyebrow" style="color:#c7c7cc">양심깨박 죽</div>
-            <h2 class="title" id="c3-title" style="color:#fff">한 숟갈마다 느껴지는 배려</h2>
-          </div>
-          <div class="visual">
-            <img src="image/Untitled-1.png" alt="인물 사진" />
-          </div>
-          <button class="more-btn" aria-label="더 보기" data-target="modal-3">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          </button>
-        </div>
-      </article>
-      
-      <!-- Card 4: 볶음밥 -->
-      <article class="card" aria-labelledby="c4-title" data-target="modal-4">
-        <div class="card-inner">
-          <div class="card-headings">
-            <div class="eyebrow">양심깨박 볶음밥</div>
-            <h2 class="title" id="c4-title">따뜻한 한끼</h2>
-          </div>
-          <div class="visual">
-            <img src="image/Untitled-3.png" alt="따끈한 볶음밥" />
-          </div>
-          <button class="more-btn" aria-label="더 보기" data-target="modal-4">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          </button>
-        </div>
-      </article>
-
-      <!-- Card 5: 양심깨박 소스 -->
-      <article class="card" aria-labelledby="c5-title" data-target="modal-5">
-        <div class="card-inner">
-          <div class="card-headings">
-            <div class="eyebrow">양심깨박 소스</div>
-            <h2 class="title" id="c5-title">요리의 핵심이 되다.</h2>
-          </div>
-          <div class="visual">
-            <img src="image/recipe4.png" alt="양심깨박 소스" />
-          </div>
-          <button class="more-btn" aria-label="더 보기" data-target="modal-5">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          </button>
-        </div>
-      </article>
-
-      <!-- Card 6: 양심깨박 단호박 쿠키 (반려견용) -->
-      <article class="card" aria-labelledby="c6-title" data-target="modal-6">
-        <div class="card-inner">
-          <div class="card-headings">
-            <div class="eyebrow">반려견 수제 간식 양심깨박 단호박 쿠키</div>
-            <h2 class="title" id="c6-title">우리 강아지를 위한, 양심이 만든 쿠키</h2>
-          </div>
-          <div class="visual">
-            <img src="image/Untitled-4.png" alt="양심깨박 단호박 쿠키" />
-          </div>
-          <button class="more-btn" aria-label="더 보기" data-target="modal-6">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          </button>
-        </div>
-      </article>
     </div>
+
+     
     <!-- 좌우 내비 버튼 -->
     <div class="nav-controls" aria-hidden="false">
       <button class="nav-btn" id="prevBtn" aria-label="이전 카드">
@@ -451,9 +459,9 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <div class="modal" id="modal-2" role="dialog" aria-modal="true" aria-labelledby="modal-2-title">
+    
+</div>
+    <div class="modal" id="modal-2" role="dialog" aria-modal="true" aria-labelledby="modal-2-title">
     <div class="dialog">
       <div class="dialog-header">
         <h3 class="dialog-title" id="modal-2-title">양심깨박 샐러드</h3>
@@ -468,11 +476,11 @@
 
           <h4>재료</h4>
           <ul>
-            <li>양심깨박 2큰술</li>
+            <li>양심깨박 138 2큰술</li>
             <li>양상추 2잎</li>
             <li>토마토 1개</li>
             <li>오이 1/2개</li>
-            <li>올리브유 1큰술</li>
+            <li>양심참기름 138 1큰술</li>
             <li>레몬즙 1작은술</li>
             <li>소금, 후추 약간</li>
           </ul>
@@ -501,14 +509,14 @@
       <div class="dialog-body">
         <div class="dialog-text">
           <p>부드럽고 영양가 있는 양심깨박 죽입니다.</p>
-
           <h4>재료</h4>
+
           <ul>
             <li>쌀 1컵</li>
-            <li>양심깨박 3큰술</li>
+            <li>양심깨박 1673큰술</li>
             <li>물 6컵</li>
             <li>소금 약간</li>
-            <li>참기름 1작은술</li>
+            <li>양심참기름 167 1작은술</li>
           </ul>
 
           <h4>만드는 방법</h4>
@@ -540,11 +548,11 @@
           <h4>재료</h4>
           <ul>
             <li>밥 2공기</li>
-            <li>양심깨박 2큰술</li>
+            <li>양심깨박 167 2큰술</li>
             <li>당근 1/2개</li>
             <li>양파 1/2개</li>
             <li>대파 1대</li>
-            <li>식용유 2큰술</li>
+            <li>양심참기름 178 2큰술</li>
             <li>간장 1큰술</li>
             <li>소금, 후추 약간</li>
           </ul>
@@ -577,12 +585,12 @@
 
           <h4>재료</h4>
           <ul>
-            <li>양심깨박 4큰술</li>
+            <li>양심깨박 178 4큰술</li>
             <li>마늘 2쪽</li>
             <li>간장 2큰술</li>
             <li>식초 1큰술</li>
             <li>설탕 1작은술</li>
-            <li>참기름 1큰술</li>
+            <li>양심참기름 1781큰술</li>
             <li>깨 1큰술</li>
           </ul>
 
