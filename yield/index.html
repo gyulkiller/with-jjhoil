@@ -167,18 +167,64 @@
     .dialog-text li { margin: 4px 0; }
 
     .caption { color: var(--muted); font-size: 13px; margin-top: 8px; }
+
+    /* 자연 섹션 (감성 히어로) */
+    .nature-hero {
+      position: relative;
+      max-width: 1200px;
+      margin: 8px auto 24px;
+      border-radius: 28px;
+      overflow: hidden;
+      background: #0b0b0b;
+      box-shadow: 0 30px 80px rgba(0,0,0,.18);
+    }
+    .nature-media { position: relative; width: 100%; height: clamp(320px, 42vw, 560px); }
+    .nature-media img { width: 100%; height: 100%; object-fit: cover; object-position: center; filter: saturate(1.05) contrast(1.02); }
+    .nature-overlay { position: absolute; inset: 0; background:
+      linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.1) 35%, rgba(0,0,0,.6) 100%),
+      radial-gradient(80% 60% at 10% 10%, rgba(0,122,255,.18), transparent 60%);
+      pointer-events: none; }
+    .nature-content { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 48px; color: #fff; }
+    .nature-eyebrow { font-size: clamp(14px, 2vw, 18px); letter-spacing: .02em; opacity: .9; margin-bottom: 6px; }
+    .nature-title { font-size: clamp(24px, 4.2vw, 48px); line-height: 1.1; font-weight: 800; margin: 0 0 14px; }
+    .nature-desc { max-width: 900px; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.75; color: #f1f1f1; opacity: .96; }
+
+    @media (max-width: 640px) {
+      .nature-content { padding: 24px; }
+    }
+
+    /* 데스크탑에서는 이미지가 잘리지 않도록 전체가 보이게 */
+    @media (min-width: 1024px) {
+      .nature-media { height: auto; }
+      .nature-media img { height: auto; object-fit: contain; display: block; }
+    }
   </style>
 </head>
 <body>
   <header class="site-header">
     <h1>양심깨박</h1>
-    <p>양심깨박의 선택, 자연에 대한 양보입니다.</p>
+    <p>기름이 남기고 간, 신뢰와 진심의 증거</p>
   </header>
+
+  <!-- 자연 감성 섹션 -->
+  <section class="nature-hero" aria-labelledby="nature-title">
+    <div class="nature-media">
+      <img src="image/nature.png" alt="빗방울을 머금은 새싹과 자연의 배경" />
+      <div class="nature-overlay"></div>
+    </div>
+    <div class="nature-content">
+      <div class="nature-eyebrow">양심깨박의 선택은</div>
+      <h2 class="nature-title" id="nature-title">자연에 대한 양보입니다</h2>
+      <p class="nature-desc">
+        양심깨박은 자연과 인간, 그리고 생명 사이의 조화로운 순환을 고민합니다. 우리는 세척에서 로스팅, 착유에 이르기까지 모든 과정을 투명하게 드러내며, 신뢰란 서로의 진실함을 나누는 데서 비롯된다고 믿습니다. 깨박은 부산물이 아닌 자연과 인간 사이에 새로운 식문화의 가능성을 열어 주는 매개체입니다. 우리는 '양심'이라는 가치에서 파생한 정직과 책임의 원칙 아래 모든 위해 요소를 철저히 걷어내어, 사람과 반려동물이 함께 안심하고 즐길 수 있는 새로운 세대의 식재료를 제시합니다. 풍요로운 영양을 품은 깨박은 다시 흙으로 돌아가 생명을 일으키는 밑거름이 되며, 이 순환 속에서 우리는 자연에 대한 양보와 존중의 가치를 실천합니다.
+      </p>
+    </div>
+  </section>
 
   <section class="track-wrap">
     <div class="card-track">
       <!-- Card 1 -->
-      <article class="card" aria-labelledby="c1-title">
+      <article class="card" aria-labelledby="c1-title" data-target="modal-1">
         <div class="card-inner">
           <div class="card-headings">
             <div class="eyebrow">양심깨박 화분 비료</div>
@@ -195,7 +241,7 @@
       </article>
 
       <!-- Card 2 -->
-      <article class="card" aria-labelledby="c2-title" style="background:#0b0b0b; color:#fff;">
+      <article class="card" aria-labelledby="c2-title" style="background:#0b0b0b; color:#fff;" data-target="modal-2">
         <div class="card-inner">
           <div class="card-headings">
             <div class="eyebrow" style="color:#a1a1a6">양심깨박 샐러드</div>
@@ -211,7 +257,7 @@
       </article>
 
       <!-- Card 3 -->
-      <article class="card" aria-labelledby="c3-title" style="background:#1e3a68; color:#fff;">
+      <article class="card" aria-labelledby="c3-title" style="background:#1e3a68; color:#fff;" data-target="modal-3">
         <div class="card-inner">
           <div class="card-headings">
             <div class="eyebrow" style="color:#c7c7cc">양심깨박 죽</div>
@@ -227,7 +273,7 @@
       </article>
       
       <!-- Card 4: 볶음밥 -->
-      <article class="card" aria-labelledby="c4-title">
+      <article class="card" aria-labelledby="c4-title" data-target="modal-4">
         <div class="card-inner">
           <div class="card-headings">
             <div class="eyebrow">양심깨박 볶음밥</div>
@@ -237,6 +283,38 @@
             <img src="image/Untitled-3.png" alt="따끈한 볶음밥" />
           </div>
           <button class="more-btn" aria-label="더 보기" data-target="modal-4">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </article>
+
+      <!-- Card 5: 양심깨박 소스 -->
+      <article class="card" aria-labelledby="c5-title" data-target="modal-5">
+        <div class="card-inner">
+          <div class="card-headings">
+            <div class="eyebrow">양심깨박 소스</div>
+            <h2 class="title" id="c5-title">요리의 핵심이 되다.</h2>
+          </div>
+          <div class="visual">
+            <img src="image/recipe4.png" alt="양심깨박 소스" />
+          </div>
+          <button class="more-btn" aria-label="더 보기" data-target="modal-5">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </article>
+
+      <!-- Card 6: 양심깨박 단호박 쿠키 (반려견용) -->
+      <article class="card" aria-labelledby="c6-title" data-target="modal-6">
+        <div class="card-inner">
+          <div class="card-headings">
+            <div class="eyebrow">반려견 수제 간식 양심깨박 단호박 쿠키</div>
+            <h2 class="title" id="c6-title">우리 강아지를 위한, 양심이 만든 쿠키</h2>
+          </div>
+          <div class="visual">
+            <img src="image/Untitled-4.png" alt="양심깨박 단호박 쿠키" />
+          </div>
+          <button class="more-btn" aria-label="더 보기" data-target="modal-6">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
@@ -263,7 +341,6 @@
         </button>
       </div>
       <div class="dialog-body">
-        <div class="dialog-visual"><img src="image/6b3eedc3-d5a6-4559-b3e3-92e0af85af60.png" alt="Apple Pay 교통카드 시각" /></div>
         <div class="dialog-text">
           <p>양심깨박을 활용한 자연 친화적 화분 비료입니다.</p>
 
@@ -283,6 +360,8 @@
             <li>식물을 심고 정기적으로 물을 줍니다.</li>
           </ol>
           <div class="caption">Tip: 물 주기와 양은 식물 종류와 계절에 맞게 조절하세요.</div>
+        <div class="dialog-visual"><img src="image/6b3eedc3-d5a6-4559-b3e3-92e0af85af60.png" alt="Apple Pay 교통카드 시각" /></div>
+
         </div>
       </div>
     </div>
@@ -291,15 +370,35 @@
   <div class="modal" id="modal-2" role="dialog" aria-modal="true" aria-labelledby="modal-2-title">
     <div class="dialog">
       <div class="dialog-header">
-        <h3 class="dialog-title" id="modal-2-title">날개 달린 가능성</h3>
+        <h3 class="dialog-title" id="modal-2-title">양심깨박 샐러드</h3>
         <button class="close-btn" data-close>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6L6 18" stroke="#000" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
       </div>
       <div class="dialog-body">
-        <div class="dialog-visual"><img src="image/Untitled-2.png" alt="Apple Intelligence 예시" /></div>
+        
         <div class="dialog-text">
-          텍스트, 이미지, 컨텍스트를 이해하는 지능형 기능으로 더 빠르고 쉬운 작업 흐름을 경험하세요. 프라이버시는 기본입니다.
+          <p>신선한 채소와 양심깨박을 조합한 건강한 샐러드입니다.</p>
+
+          <h4>재료</h4>
+          <ul>
+            <li>양심깨박 2큰술</li>
+            <li>양상추 2잎</li>
+            <li>토마토 1개</li>
+            <li>오이 1/2개</li>
+            <li>올리브유 1큰술</li>
+            <li>레몬즙 1작은술</li>
+            <li>소금, 후추 약간</li>
+          </ul>
+
+          <h4>만드는 방법</h4>
+          <ol>
+            <li>양상추는 적당한 크기로 찢고, 토마토와 오이는 썰어둡니다.</li>
+            <li>양심깨박을 가볍게 볶아 향을 내줍니다.</li>
+            <li>올리브유, 레몬즙, 소금, 후추로 드레싱을 만듭니다.</li>
+            <li>채소와 양심깨박을 섞고 드레싱을 뿌려 완성합니다.</li>
+          </ol>
+          <div class="dialog-visual"><img src="image/Untitled-2.png" alt="양심깨박 샐러드" /></div>
         </div>
       </div>
     </div>
@@ -314,8 +413,28 @@
         </button>
       </div>
       <div class="dialog-body">
-        <div class="dialog-visual"><img src="image/Untitled-1.png" alt="따뜻한 죽 한 그릇" /></div>
-        <div class="dialog-text">곡물과 깨의 담백함으로 속을 편안하게 하는 따뜻한 한 그릇을 담았습니다.</div>
+        <div class="dialog-text">
+          <p>부드럽고 영양가 있는 양심깨박 죽입니다.</p>
+
+          <h4>재료</h4>
+          <ul>
+            <li>쌀 1컵</li>
+            <li>양심깨박 3큰술</li>
+            <li>물 6컵</li>
+            <li>소금 약간</li>
+            <li>참기름 1작은술</li>
+          </ul>
+
+          <h4>만드는 방법</h4>
+          <ol>
+            <li>쌀을 깨끗이 씻어 30분간 불립니다.</li>
+            <li>냄비에 물을 붓고 쌀을 넣어 끓입니다.</li>
+            <li>쌀이 퍼지면 양심깨박을 넣고 저어줍니다.</li>
+            <li>소금과 참기름을 넣어 간을 맞춰 완성합니다.</li>
+          </ol>
+        <div class="dialog-visual"><img src="image/Untitled-1.png" alt="따뜻한 양심깨박 죽" /></div>
+
+        </div>
       </div>
     </div>
   </div>
@@ -329,8 +448,108 @@
         </button>
       </div>
       <div class="dialog-body">
-        <div class="dialog-visual"><img src="image/Untitled-3.png" alt="고소한 볶음밥" /></div>
-        <div class="dialog-text">채소와 곡물을 균형 있게 볶아낸 건강한 한 끼. 갓 볶아 고소하고 담백한 풍미를 즐겨보세요.</div>
+        <div class="dialog-text">
+          <p>고소한 양심깨박이 들어간 건강한 볶음밥입니다.</p>
+
+          <h4>재료</h4>
+          <ul>
+            <li>밥 2공기</li>
+            <li>양심깨박 2큰술</li>
+            <li>당근 1/2개</li>
+            <li>양파 1/2개</li>
+            <li>대파 1대</li>
+            <li>식용유 2큰술</li>
+            <li>간장 1큰술</li>
+            <li>소금, 후추 약간</li>
+          </ul>
+
+          <h4>만드는 방법</h4>
+          <ol>
+            <li>당근, 양파, 대파를 적당한 크기로 썰어둡니다.</li>
+            <li>팬에 식용유를 두르고 양심깨박을 볶아 향을 내줍니다.</li>
+            <li>썰어둔 채소들을 넣고 볶아줍니다.</li>
+            <li>밥을 넣고 간장, 소금, 후추로 간을 맞춰 완성합니다.</li>
+          </ol>
+
+          <div class="dialog-visual"><img src="image/Untitled-3.png" alt="양심깨박 볶음밥" /></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modal-5" role="dialog" aria-modal="true" aria-labelledby="modal-5-title">
+    <div class="dialog">
+      <div class="dialog-header">
+        <h3 class="dialog-title" id="modal-5-title">양심깨박 소스</h3>
+        <button class="close-btn" data-close>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6L6 18" stroke="#000" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <div class="dialog-text">
+          <p>다양한 요리에 활용할 수 있는 양심깨박 소스입니다.</p>
+
+          <h4>재료</h4>
+          <ul>
+            <li>양심깨박 4큰술</li>
+            <li>마늘 2쪽</li>
+            <li>간장 2큰술</li>
+            <li>식초 1큰술</li>
+            <li>설탕 1작은술</li>
+            <li>참기름 1큰술</li>
+            <li>깨 1큰술</li>
+          </ul>
+
+          <h4>만드는 방법</h4>
+          <ol>
+            <li>양심깨박을 가볍게 볶아 향을 내줍니다.</li>
+            <li>마늘을 다져서 준비합니다.</li>
+            <li>모든 재료를 섞어서 소스를 만듭니다.</li>
+            <li>냉장고에 30분간 숙성시켜 완성합니다.</li>
+          </ol>
+
+          <div class="dialog-visual"><img src="image/recipe4.png" alt="양심깨박 소스" /></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modal-6" role="dialog" aria-modal="true" aria-labelledby="modal-6-title">
+    <div class="dialog">
+      <div class="dialog-header">
+        <h3 class="dialog-title" id="modal-6-title">양심깨박 단호박 쿠키 (반려견 영양간식)</h3>
+        <button class="close-btn" data-close>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6L6 18" stroke="#000" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <div class="dialog-text">
+          <p>반려견용 수제 간식 레시피입니다. 재료는 알러지 여부를 확인하고 급여하세요.</p>
+
+          <h4>재료</h4>
+          <ul>
+            <li>단호박 퓌레 100g (껍질 제거 후 찐 단호박)</li>
+            <li>달걀 1개</li>
+            <li>양심깨박 10g (곱게 분쇄된 참깨/들깨/흑임자박)</li>
+            <li>쌀가루 100g (또는 현미·고구마가루 일부 대체 가능)</li>
+          </ul>
+
+          <h4>만드는 법</h4>
+          <ol>
+            <li>단호박과 달걀을 갈아 반죽 재료와 섞습니다.</li>
+            <li>반죽을 한 숟가락씩 떠 유산지에 올려주세요.</li>
+            <li>160℃ 오븐에서 15분 구워줍니다.</li>
+          </ol>
+
+          <h4>TIP</h4>
+          <ul>
+            <li>깨박은 곱게 갈아주세요.</li>
+            <li>소형견은 작고 얇게 만들어 주세요.</li>
+            <li>하루 1~2개 이하 급여 (성견·노령견용)</li>
+          </ul>
+
+          <div class="dialog-visual"><img src="image/Untitled-4.png" alt="양심깨박 단호박 쿠키" /></div>
+        </div>
       </div>
     </div>
   </div>
@@ -350,6 +569,16 @@
 
     document.querySelectorAll('.more-btn').forEach(btn => {
       btn.addEventListener('click', () => open(btn.dataset.target));
+    });
+    // 카드 전체를 클릭 영역으로 확장
+    document.querySelectorAll('.card[data-target]').forEach(card => {
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', (e) => {
+        // 내부 버튼 클릭은 중복처리 방지
+        if ((e.target).closest && (e.target).closest('.more-btn')) return;
+        const id = card.getAttribute('data-target');
+        if (id) open(id);
+      });
     });
 
     document.querySelectorAll('.modal').forEach(modal => {
