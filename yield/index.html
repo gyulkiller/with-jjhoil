@@ -93,7 +93,7 @@
 
     /* 모바일 최적화: 카드가 화면을 다 채우지 않고 옆 카드가 보이도록 */
     @media (max-width: 640px) {
-      .card-track { padding: 16px 16px 28px; gap: 16px; scroll-padding-left: 16px; }
+      .card-track { padding: 16px 20px 28px; gap: 16px; scroll-padding-left: 20px; }
       .card { flex: 0 0 82vw; height: 520px; }
       .card-headings { min-height: 120px; }
       .title { font-size: 24px; }
@@ -188,15 +188,61 @@
     .nature-eyebrow { font-size: clamp(14px, 2vw, 18px); letter-spacing: .02em; opacity: .9; margin-bottom: 6px; }
     .nature-title { font-size: clamp(24px, 4.2vw, 48px); line-height: 1.1; font-weight: 800; margin: 0 0 14px; }
     .nature-desc { max-width: 900px; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.75; color: #f1f1f1; opacity: .96; }
+    .nature-title, .nature-eyebrow { text-shadow: 0 2px 8px rgba(0,0,0,.3); }
+
+    /* Values grid */
+    .values-grid { max-width: 1200px; margin: 32px auto 80px; padding: 0 24px; }
+    .values-header h2 { font-size: clamp(28px, 4.2vw, 48px); margin: 0 0 6px; letter-spacing: -0.02em; }
+    .values-header p { margin: 0 0 24px; color: var(--muted); font-size: clamp(14px, 1.6vw, 18px); }
+    .values-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .value-card { background: #fff; border-radius: 20px; padding: 28px; box-shadow: 0 10px 30px rgba(0,0,0,.08); border: 1px solid rgba(0,0,0,.06); display: flex; flex-direction: column; gap: 10px; }
+    .v-icon { font-size: 28px; filter:grayscale(100%) }
+    .v-title { font-size: 18px; margin: 0; }
+    .v-desc { margin: 0; color: #333; line-height: 1.6; }
+
+    @media (max-width: 960px) {
+      .values-cards { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .values-grid { padding: 0 20px; }
+      .values-cards { grid-template-columns: 1fr; gap: 16px; }
+      .value-card { padding: 22px; }
+    }
 
     @media (max-width: 640px) {
-      .nature-content { padding: 24px; }
+      .nature-hero { margin: 8px 20px 24px; border-radius: 20px; background: #ffffff; }
+      .nature-media { height: 320px; }
+      .nature-content { position: static; padding: 16px 20px 20px; color: var(--text); }
+      .nature-desc { color: #333; opacity: 1; }
     }
 
     /* 데스크탑에서는 이미지가 잘리지 않도록 전체가 보이게 */
     @media (min-width: 1024px) {
       .nature-media { height: auto; }
       .nature-media img { height: auto; object-fit: contain; display: block; }
+    }
+
+    /* 최하단 CTA 섹션 */
+    .cta-section {
+      max-width: 1200px;
+      margin: 80px auto 120px;
+      padding: 48px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, #f5fff7 0%, #e8fff0 100%);
+      border: 1px solid rgba(0,0,0,.06);
+      box-shadow: 0 20px 60px rgba(0,0,0,.08);
+      text-align: center;
+    }
+    body { padding-bottom: 30px; }
+    .cta-title { font-size: clamp(24px, 4.2vw, 44px); margin: 0 0 10px; letter-spacing: -0.02em; }
+    .cta-desc { color: var(--muted); font-size: clamp(14px, 1.6vw, 18px); margin: 0 0 24px; }
+    .cta-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; padding: 14px 22px; border-radius: 999px; border: 1px solid rgba(0,0,0,.08);
+      background: #111; color: #fff; font-weight: 600; cursor: not-allowed; opacity: .7;
+    }
+    @media (max-width: 640px) {
+      .cta-section { margin: 48px 20px 80px; padding: 28px; border-radius: 20px; }
     }
   </style>
 </head>
@@ -218,6 +264,46 @@
       <p class="nature-desc">
         양심깨박은 자연과 인간, 그리고 생명 사이의 조화로운 순환을 고민합니다. 우리는 세척에서 로스팅, 착유에 이르기까지 모든 과정을 투명하게 드러내며, 신뢰란 서로의 진실함을 나누는 데서 비롯된다고 믿습니다. 깨박은 부산물이 아닌 자연과 인간 사이에 새로운 식문화의 가능성을 열어 주는 매개체입니다. 우리는 '양심'이라는 가치에서 파생한 정직과 책임의 원칙 아래 모든 위해 요소를 철저히 걷어내어, 사람과 반려동물이 함께 안심하고 즐길 수 있는 새로운 세대의 식재료를 제시합니다. 풍요로운 영양을 품은 깨박은 다시 흙으로 돌아가 생명을 일으키는 밑거름이 되며, 이 순환 속에서 우리는 자연에 대한 양보와 존중의 가치를 실천합니다.
       </p>
+    </div>
+  </section>
+
+<!-- 가치 섹션: 아이콘 카드 그리드 -->
+<section class="values-grid" aria-labelledby="values-title">
+    <div class="values-header">
+      <h2 id="values-title">양심깨박의 가치</h2>
+      <p>자연과 식탁, 반려동물과 사람을 하나로 잇는 실천</p>
+    </div>
+    <div class="values-cards">
+      <article class="value-card">
+        <div class="v-icon">🔍</div>
+        <h3 class="v-title">투명한 공정</h3>
+        <p class="v-desc">세척부터 로스팅, 착유까지 전 과정을 투명하게 공개하여 신뢰를 나눕니다.</p>
+      </article>
+      <article class="value-card">
+        <div class="v-icon">🍽️</div>
+        <h3 class="v-title">다양한 활용</h3>
+        <p class="v-desc">볶음 요리, 샐러드, 죽 토핑, 소스 등 다양한 요리에 안심하고 활용할 수 있습니다.</p>
+      </article>
+      <article class="value-card">
+        <div class="v-icon">🐾</div>
+        <h3 class="v-title">반려동물 안전</h3>
+        <p class="v-desc">정직과 책임을 바탕으로 위해 요소를 완벽히 배제해 반려동물 간식 보조원료로도 안전합니다.</p>
+      </article>
+      <article class="value-card">
+        <div class="v-icon">♻️</div>
+        <h3 class="v-title">순환의 밑거름</h3>
+        <p class="v-desc">풍부한 영양을 담은 깨박은 화분과 정원 토양에 뿌려 생명력을 되살립니다.</p>
+      </article>
+      <article class="value-card">
+        <div class="v-icon">📚</div>
+        <h3 class="v-title">교육·사회적 가치</h3>
+        <p class="v-desc">‘버려지는 부분’에 대한 인식을 바꾸는 교육과 체험으로 지속가능한 식문화 전환을 돕습니다.</p>
+      </article>
+      <article class="value-card">
+        <div class="v-icon">🌱</div>
+        <h3 class="v-title">공존의 실천</h3>
+        <p class="v-desc">인간과 반려동물, 흙과 식탁 사이에 경계를 두지 않습니다. 깨박은 사람과 자연 우리 모두의 음식입니다.</p>
+      </article>
     </div>
   </section>
 
@@ -553,6 +639,16 @@
       </div>
     </div>
   </div>
+
+  <!-- 최하단 CTA 섹션 -->
+  <section class="cta-section" aria-labelledby="cta-title">
+    <h2 class="cta-title" id="cta-title">양심깨박과 함께하는 여정에 동참하세요</h2>
+    <p class="cta-desc">주방에서 정원까지 이어지는 '자연에 대한 양보'의 여정에 함께하시겠습니까?</p>
+    <button class="cta-btn" disabled>함께할 여정을 준비 중입니다.</button>
+  </section>
+  <section style="height: 20px;">
+
+  </section>
 
   <script>
     // 모달 열기/닫기 핸들러
