@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Yield - Gallery</title>
+  <link rel="stylesheet" href="../styles.css" />
   <style>
     :root {
       --text: #1d1d1f;
@@ -21,24 +22,7 @@
       background: #ffffff;
     }
 
-    /* 헤더 */
-    .site-header {
-      max-width: 1200px;
-      margin: 32px auto 8px;
-      padding: 0 24px;
-    }
-    .site-header h1 {
-      font-size: clamp(40px, 7vw, 88px);
-      line-height: 0.95;
-      letter-spacing: -0.02em;
-      margin: 0 0 8px;
-      font-weight: 700;
-    }
-    .site-header p {
-      margin: 0;
-      color: var(--muted);
-      font-size: clamp(14px, 2.4vw, 20px);
-    }
+    /* 페이지 로컬 헤더(히어로) 보정은 삭제하고 공용 헤더 사용 */
 
     /* 카드 트랙 (가로 스크롤 + 스냅) */
     .track-wrap {
@@ -246,9 +230,16 @@
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <h1>양심깨박</h1>
-    <p>기름이 남기고 간, 신뢰와 진심의 증거</p>
+  <header class="site-header" role="navigation" aria-label="Primary Navigation">
+    <nav class="nav">
+      <a class="brand" href="/"><img class="brand-logo" src="../svg/onlyu.svg" alt="그이름 로고" />&nbsp;함께 WITH</a>
+      <ul class="nav-menu">
+        <li><a href="/music">MUSIC</a></li>
+        <li><a href="/yield">YIELD</a></li>
+        <li><a href="http://instagram.com/thenames_kr">RECIPE</a></li>
+        <li><a href="https://jjhoil.com">SHOP</a></li>
+      </ul>
+    </nav>
   </header>
 
   <!-- 자연 감성 섹션 -->
