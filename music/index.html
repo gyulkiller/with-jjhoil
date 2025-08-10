@@ -230,10 +230,23 @@
     }
 
     function formatDuration(ms) {
-      const totalSec = Math.round((ms || 0) / 1000);
+      if (!ms || ms <= 0) return '—:—';
+      const totalSec = Math.round(ms / 1000);
       const m = Math.floor(totalSec / 60);
       const s = totalSec % 60;
       return m + ':' + String(s).padStart(2, '0');
+    }
+
+    function deriveTitle(s) {
+      const t = (s && s.title) ? String(s.title).trim() : '';
+      if (t && t.toLowerCase() !== 'untitled') return t;
+      const url = s && s.permalink_url ? s.permalink_url : '';
+      try {
+        const u = new URL(url);
+        const slug = decodeURIComponent(u.pathname.split('/').filter(Boolean).pop() || '');
+        if (slug) return slug.replace(/[-_]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      } catch {}
+      return '미정';
     }
 
     function renderTrackList(arr) {
@@ -253,7 +266,7 @@
         info.className = 'info';
         const title = document.createElement('span');
         title.className = 'title';
-        title.textContent = s && s.title ? s.title : 'Untitled';
+        title.textContent = deriveTitle(s);
         const meta = document.createElement('span');
         meta.className = 'meta';
         meta.textContent = (s && s.user && s.user.username) ? s.user.username : 'TH3NAME';
@@ -276,6 +289,42 @@
     function setActiveIndex(index) {
       const rows = trackListEl.querySelectorAll('.track');
       rows.forEach((el) => el.classList.toggle('active', Number(el.dataset.index) === Number(index)));
+    }
+
+    function updateTrackRowInfo(index, sound) {
+      const row = trackListEl.querySelector('.track[data-index="' + index + '"]');
+      if (!row || !sound) return;
+      const titleEl = row.querySelector('.title');
+      const durEl = row.querySelector('.dur');
+      if (sound.title && titleEl && (titleEl.textContent === '미정' || titleEl.textContent === 'Untitled')) {
+        titleEl.textContent = deriveTitle(sound);
+      }
+      if (typeof sound.duration === 'number' && durEl) {
+        const current = durEl.textContent || '';
+        const next = formatDuration(sound.duration);
+        if (current === '—:—' && next !== current) durEl.textContent = next;
+      }
+    }
+
+    function hydrateAllTracks() {
+      try {
+        widget.setVolume(0);
+      } catch(_) {}
+      let originalIndex = 0;
+      try { widget.getCurrentSoundIndex((idx) => { originalIndex = idx || 0; }); } catch(_) {}
+      const total = sounds.length;
+      let i = 0;
+      function step() {
+        if (i >= total) {
+          try { widget.skip(originalIndex); widget.setVolume(100); } catch(_) {}
+          return;
+        }
+        try { widget.skip(i); } catch(_) {}
+        setTimeout(() => {
+          try { widget.getCurrentSound((cur) => { updateTrackRowInfo(i, cur); i += 1; step(); }); } catch(_) { i += 1; step(); }
+        }, 350);
+      }
+      step();
     }
 
     window.addEventListener('load', function () {
@@ -304,6 +353,9 @@
             });
           } catch(_) {}
         });
+
+        // 메타데이터가 일부만 제공될 때, 모든 트랙을 순회하며 보강
+        hydrateAllTracks();
       });
 
       playBtn.addEventListener('click', function () {
