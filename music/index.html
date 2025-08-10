@@ -21,6 +21,11 @@
       margin: calc(var(--header-h, 56px) + 24px) auto 32px;
       padding: 0 20px;
     }
+    /* Layout: stack on mobile, side-by-side on desktop */
+    .music-layout { display: grid; gap: 18px; align-items: start; }
+    @media (min-width: 980px) {
+      .music-layout { grid-template-columns: 1fr 420px; }
+    }
     h1 {
       font-size: 28px;
       margin: 0 0 8px;
@@ -150,7 +155,7 @@
       </ul>
     </nav>
   </header>
-  <main class="container">
+  <main class="container music-layout">
     <div class="album-skin" role="region" aria-label="VISIBLE TRUTH player">
       <div class="album-cover" aria-hidden="true"></div>
       <div class="skin-overlay"></div>
@@ -177,12 +182,19 @@
     </div>
       <iframe id="sc-backend" title="SoundCloud backend" allow="autoplay" style="position:absolute; width:1px; height:1px; border:0; opacity:0; pointer-events:none;"></iframe>
     </div>
+    <aside class="tracks" aria-label="곡 목록">
+      <div id="tracklist" class="tracklist" role="list"></div>
+    </aside>
   </main>
-  <section class="tracks" aria-label="곡 목록">
-    <div id="tracklist" class="tracklist" role="list"></div>
-  </section>
 
   <script src="https://w.soundcloud.com/player/api.js"></script>
+  <script>
+    window.manualTrackOverrides = {
+      5: { title: '한 숟갈의 배려', durationMs: 267000 },
+      6: { title: 'Seed of the End', durationMs: 232000 },
+      7: { title: '생명을 일으키는 밑거름', durationMs: 265000 }
+    };
+  </script>
   <script>
     const backend = document.getElementById('sc-backend');
     const playBtn = document.querySelector('.btn--play');
@@ -195,6 +207,10 @@
     const trackListEl = document.getElementById('tracklist');
 
     const playlistUrl = 'https://api.soundcloud.com/playlists/2063852271';
+    // 수동 보강용(필요 시 사용자 지정 가능). 예: window.manualTrackOverrides = {5:{title:'곡6', durationMs:191000}}
+    const manualTrackOverrides = (window.manualTrackOverrides || (() => {
+      try { return JSON.parse(localStorage.getItem('music_overrides') || '{}'); } catch(_) { return {}; }
+    })());
       const params = new URLSearchParams({
       url: playlistUrl,
         auto_play: 'false',
@@ -246,7 +262,7 @@
         const slug = decodeURIComponent(u.pathname.split('/').filter(Boolean).pop() || '');
         if (slug) return slug.replace(/[-_]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
       } catch {}
-      return '미정';
+      return 'Track';
     }
 
     function renderTrackList(arr) {
@@ -266,7 +282,10 @@
         info.className = 'info';
         const title = document.createElement('span');
         title.className = 'title';
-        title.textContent = deriveTitle(s);
+        const o = manualTrackOverrides[i] || {};
+        const derived = deriveTitle(s);
+        // 요청: 제목 뒤의 번호 제거
+        title.textContent = o.title || derived;
         const meta = document.createElement('span');
         meta.className = 'meta';
         meta.textContent = (s && s.user && s.user.username) ? s.user.username : 'TH3NAME';
@@ -275,7 +294,7 @@
 
         const dur = document.createElement('span');
         dur.className = 'dur';
-        dur.textContent = formatDuration(s && s.duration);
+        dur.textContent = formatDuration(o.durationMs != null ? o.durationMs : (s && s.duration));
 
         row.appendChild(order);
         row.appendChild(info);
@@ -296,35 +315,104 @@
       if (!row || !sound) return;
       const titleEl = row.querySelector('.title');
       const durEl = row.querySelector('.dur');
-      if (sound.title && titleEl && (titleEl.textContent === '미정' || titleEl.textContent === 'Untitled')) {
-        titleEl.textContent = deriveTitle(sound);
-      }
+      const o = manualTrackOverrides[index] || {};
+      if (titleEl) titleEl.textContent = o.title || deriveTitle(sound);
       if (typeof sound.duration === 'number' && durEl) {
-        const current = durEl.textContent || '';
-        const next = formatDuration(sound.duration);
-        if (current === '—:—' && next !== current) durEl.textContent = next;
+        durEl.textContent = formatDuration(o.durationMs != null ? o.durationMs : sound.duration);
       }
     }
 
     function hydrateAllTracks() {
-      try {
-        widget.setVolume(0);
-      } catch(_) {}
+      try { widget.setVolume(0); } catch(_) {}
       let originalIndex = 0;
       try { widget.getCurrentSoundIndex((idx) => { originalIndex = idx || 0; }); } catch(_) {}
       const total = sounds.length;
-      let i = 0;
+
+      let index = 0;
+
+      function hydrateOne(targetIndex, attempt) {
+        const retry = (nextAttemptDelayMs) => {
+          const nextAttempt = (attempt || 0) + 1;
+          if (nextAttempt <= 4) {
+            setTimeout(() => hydrateOne(targetIndex, nextAttempt), nextAttemptDelayMs);
+          } else {
+            // 재시도 한계 초과: 다음 트랙으로 진행
+            index = targetIndex + 1;
+            step();
+          }
+        };
+
+        try { widget.skip(targetIndex); } catch(_) {}
+
+        // 점진적 백오프 (네트워크/위젯 로딩 지연 대비)
+        const baseDelay = 600; // 기존 350ms -> 600ms로 증가
+        const delay = baseDelay + (attempt || 0) * 300;
+
+        setTimeout(() => {
+          try {
+            widget.getCurrentSound((cur) => {
+              if (!cur || typeof cur.duration !== 'number' || cur.duration <= 0) {
+                return retry(350);
+              }
+              updateTrackRowInfo(targetIndex, cur);
+              index = targetIndex + 1;
+              step();
+            });
+          } catch(_) {
+            retry(350);
+          }
+        }, delay);
+      }
+
       function step() {
-        if (i >= total) {
+        if (index >= total) {
           try { widget.skip(originalIndex); widget.setVolume(100); } catch(_) {}
+          // 하이드레이션 종료 후, 누락된 제목은 oEmbed(JSONP)로 보완
+          supplementTitlesWithOEmbed();
           return;
         }
-        try { widget.skip(i); } catch(_) {}
-        setTimeout(() => {
-          try { widget.getCurrentSound((cur) => { updateTrackRowInfo(i, cur); i += 1; step(); }); } catch(_) { i += 1; step(); }
-        }, 350);
+        hydrateOne(index, 0);
       }
+
       step();
+    }
+
+    function isUnknownTitleText(text) {
+      if (!text) return true;
+      const t = String(text).trim().toLowerCase();
+      return t === '' || t === 'untitled' || /^track\s+\d+/.test(t);
+    }
+
+    function supplementTitlesWithOEmbed() {
+      sounds.forEach((s, i) => {
+        const row = trackListEl.querySelector('.track[data-index="' + i + '"] .title');
+        const current = row ? row.textContent : '';
+        const o = manualTrackOverrides[i] || {};
+        if (o.title || !(s && s.permalink_url)) return;
+        if (!isUnknownTitleText(current)) return;
+        requestOEmbedTitle(i, s.permalink_url);
+      });
+    }
+
+    function requestOEmbedTitle(index, url) {
+      const cb = '__scOE_' + index + '_' + Math.random().toString(36).slice(2);
+      window[cb] = function (data) {
+        try {
+          const titleRaw = (data && data.title) ? String(data.title) : '';
+          const title = titleRaw.split(' by ')[0] || titleRaw;
+          const row = trackListEl.querySelector('.track[data-index="' + index + '"] .title');
+          if (row && isUnknownTitleText(row.textContent)) row.textContent = title || row.textContent;
+        } finally {
+          try { delete window[cb]; } catch(_) {}
+          const el = document.getElementById(cb);
+          if (el) el.remove();
+        }
+      };
+      const script = document.createElement('script');
+      script.id = cb;
+      script.src = 'https://soundcloud.com/oembed?format=json&url=' + encodeURIComponent(url) + '&callback=' + cb;
+      script.referrerPolicy = 'no-referrer-when-downgrade';
+      document.body.appendChild(script);
     }
 
     window.addEventListener('load', function () {
