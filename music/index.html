@@ -59,7 +59,7 @@
     iframe#sc-player.visual { height: 480px; }
     .hint { margin-top: 10px; color: rgba(255,255,255,0.55); font-size: 14px; }
 
-    /* Animated warm orange gradient background */
+    /* Animated warm gradient background (slow drifting) */
     .gradient-bg {
       position: fixed;
       inset: 0;
@@ -71,16 +71,37 @@
         radial-gradient(70% 80% at 50% 85%, rgba(255, 90, 60, 0.40), transparent 60%),
         linear-gradient(180deg, #f3f3f3 0%, #ff8b8b 100%);
       background-blend-mode: screen, screen, screen, normal;
-      background-size: 160% 160%, 160% 160%, 160% 160%, 100% 100%;
+      background-size: 175% 175%, 175% 175%, 175% 175%, 100% 100%;
       background-position: 0% 0%, 100% 0%, 50% 100%, center;
-      animation: gradientMove 3s ease-in-out infinite alternate;
+      animation: gradientDrift 48s ease-in-out infinite;
       will-change: background-position;
     }
 
-    @keyframes gradientMove {
-      0%   { background-position: 0% 0%, 100% 0%, 50% 100%, center; }
-      50%  { background-position: 40% 30%, 70% 40%, 40% 60%, center; }
-      100% { background-position: 100% 100%, 0% 100%, 50% 0%, center; }
+    @keyframes gradientDrift {
+      0%   {
+        background-position: 0% 0%, 100% 0%, 50% 100%, center;
+        background-size: 170% 170%, 172% 172%, 168% 168%, 100% 100%;
+      }
+      25%  {
+        background-position: 25% 20%, 80% 10%, 45% 80%, center;
+        background-size: 180% 180%, 185% 185%, 175% 175%, 100% 100%;
+      }
+      50%  {
+        background-position: 60% 40%, 40% 60%, 55% 40%, center;
+        background-size: 175% 175%, 170% 170%, 180% 180%, 100% 100%;
+      }
+      75%  {
+        background-position: 80% 70%, 20% 80%, 60% 30%, center;
+        background-size: 185% 185%, 175% 175%, 170% 170%, 100% 100%;
+      }
+      100% {
+        background-position: 100% 100%, 0% 100%, 50% 0%, center;
+        background-size: 170% 170%, 172% 172%, 168% 168%, 100% 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .gradient-bg { animation: none; }
     }
 
     /* Album skin styles */
@@ -295,6 +316,39 @@
       try { localStorage.setItem('repeat_mode', JSON.stringify(repeatMode)); } catch(_) {}
     }
 
+    // 최근/이전 재생 인덱스 추적 (FINISH 시 정확한 종료 트랙 식별용)
+    let recentPlayIndex = null;
+    let previousPlayIndex = null;
+
+    // 재생 가능 여부 판단 (위젯이 자동으로 건너뛰는 트랙 대비)
+    function isPlayableSound(sound) {
+      if (!sound) return false;
+      if (sound.streamable === false) return false;
+      if (typeof sound.duration !== 'number' || sound.duration <= 0) return false;
+      return true;
+    }
+
+    // 현재 인덱스 기준 다음 재생할 인덱스 계산 (반복 모드 및 비재생 트랙 고려)
+    function findNextPlayableIndex(fromIndex, mode) {
+      const total = sounds.length;
+      if (total <= 0) return null;
+
+      // 직후부터 끝까지 탐색
+      for (let i = fromIndex + 1; i < total; i += 1) {
+        if (isPlayableSound(sounds[i])) return i;
+      }
+
+      // 반복: 전체 → 처음부터 fromIndex까지 탐색
+      if (mode === 'all') {
+        for (let i = 0; i <= fromIndex && i < total; i += 1) {
+          if (isPlayableSound(sounds[i])) return i;
+        }
+      }
+
+      // 더 이상 재생할 곡 없음
+      return null;
+    }
+
     function cycleRepeatMode() {
       const next = repeatMode === 'off' ? 'all' : (repeatMode === 'all' ? 'one' : 'off');
       setRepeatUI(next);
@@ -493,28 +547,24 @@
         widget.bind(SC.Widget.Events.PAUSE, function () { setPlayingUI(false); });
         widget.bind(SC.Widget.Events.FINISH, function () {
           try {
-            widget.getCurrentSoundIndex(function (idx) {
-              const lastIndex = (sounds && sounds.length) ? sounds.length - 1 : -1;
-              if (idx == null || lastIndex < 0) {
-                try { widget.next(); } catch(_) {}
-                return;
-              }
-              // 한 곡 반복 모드: 같은 트랙을 다시 재생
-              if (repeatMode === 'one') {
-                const target = (typeof currentIndex === 'number') ? currentIndex : (idx || 0);
-                try { widget.skip(target); widget.play(); } catch(_) {}
-                return;
-              }
-              if (idx >= lastIndex) {
-                if (repeatMode === 'all') {
-                  try { widget.skip(0); widget.play(); } catch(_) {}
-                } else {
-                  setPlayingUI(false);
-                }
-              } else {
-                try { widget.next(); } catch(_) {}
-              }
-            });
+            // 방금 끝난 트랙 인덱스(새 PLAY가 오기 전 값)
+            const finishedIndex = (previousPlayIndex != null)
+              ? previousPlayIndex
+              : (currentIndex ?? 0);
+
+            // 한 곡 반복만 직접 처리
+            if (repeatMode === 'one') {
+              const target = (typeof finishedIndex === 'number') ? finishedIndex : 0;
+              try { widget.skip(target); widget.play(); } catch(_) {}
+              return;
+            }
+
+            // 마지막 곡 + 반복 꺼짐이면 정지만 처리. 그 외는 위젯 자동 이동에 맡김
+            const total = sounds.length;
+            const lastIndex = total > 0 ? total - 1 : -1;
+            if (finishedIndex >= lastIndex && repeatMode !== 'all') {
+              setPlayingUI(false);
+            }
           } catch(_) {}
         });
         widget.bind(SC.Widget.Events.PLAY_PROGRESS, function (e) {
@@ -526,6 +576,8 @@
             widget.getCurrentSound(function (cur) {
               const idx = cur && cur.id != null ? idToIndex.get(String(cur.id)) : null;
               if (idx != null) {
+                previousPlayIndex = recentPlayIndex;
+                recentPlayIndex = idx;
                 currentIndex = idx;
                 setActiveIndex(idx);
               }
