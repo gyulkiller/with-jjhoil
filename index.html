@@ -181,8 +181,28 @@
           <li><a href="http://instagram.com/thenames_kr">RECIPE</a></li>
           <li><a href="https://jjhoil.com">SHOP</a></li>
         </ul>
+        <button class="nav-toggle" aria-label="메뉴 열기" aria-controls="mobileMenu" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
       </nav>
     </header>
+    <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+      <div class="mm-inner">
+        <div class="mm-header">
+          <button class="mm-close" aria-label="메뉴 닫기">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <nav>
+          <ul>
+            <li><a href="/music">MUSIC</a></li>
+            <li><a href="/yield">YIELD</a></li>
+            <li><a href="http://instagram.com/thenames_kr">RECIPE</a></li>
+            <li><a href="https://jjhoil.com">SHOP</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
     <main>
       <!-- Hero -->
       <section id="music" class="hero hero--music">
@@ -226,5 +246,18 @@
       </section>
     </main>
   </body>
+  <script>
+    (function(){
+      const toggle = document.querySelector('.nav-toggle');
+      const menu = document.getElementById('mobileMenu');
+      const closeBtn = menu?.querySelector('.mm-close');
+      function open(){ menu?.classList.add('open'); document.body.classList.add('menu-open'); toggle?.setAttribute('aria-expanded','true'); menu?.setAttribute('aria-hidden','false'); }
+      function close(){ menu?.classList.remove('open'); document.body.classList.remove('menu-open'); toggle?.setAttribute('aria-expanded','false'); menu?.setAttribute('aria-hidden','true'); }
+      toggle?.addEventListener('click', open);
+      closeBtn?.addEventListener('click', close);
+      menu?.addEventListener('click', (e)=>{ if(e.target===menu) close(); });
+      window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
+    })();
+  </script>
   </html>
 
