@@ -77,6 +77,64 @@
       50%  { background-position: 40% 30%, 70% 40%, 40% 60%, center; }
       100% { background-position: 100% 100%, 0% 100%, 50% 0%, center; }
     }
+
+    /* Album skin styles */
+    .album-skin {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 16px 60px rgba(0,0,0,0.35);
+      background: #121212;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .album-cover {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: url('./img/visible_truth.png') center/cover no-repeat;
+      filter: saturate(1.05) contrast(1.02);
+    }
+    .skin-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.66) 100%);
+      pointer-events: none;
+    }
+    .skin-controls {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      padding: 18px 16px 16px;
+      display: grid; gap: 12px;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 30%, rgba(0,0,0,0.75) 100%);
+      color: #fff;
+    }
+    .skin-meta { display: grid; gap: 4px; }
+    .skin-title { font-weight: 800; letter-spacing: -0.01em; font-size: 18px; }
+    .skin-artist { opacity: 0.8; font-size: 13px; }
+    .skin-buttons { display: inline-flex; gap: 10px; align-items: center; }
+    .btn {
+      display: inline-grid; place-items: center;
+      width: 40px; height: 40px; border-radius: 999px;
+      background: rgba(255,255,255,0.9); color: #111; border: none; cursor: pointer;
+      transition: transform .15s ease, box-shadow .2s ease;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn--prev, .btn--next { background: rgba(255,255,255,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.18); }
+    .btn--play { width: 52px; height: 52px; background: #ffd24d; }
+    .progress { position: relative; height: 6px; background: rgba(255,255,255,0.18); border-radius: 999px; overflow: hidden; }
+    .progress__bar { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; transform-origin: left center; transform: scaleX(0); background: linear-gradient(90deg, #ffb84d, #ff7a59); }
+
+    /* Track list */
+    .tracks { margin-top: 14px; }
+    .tracklist { background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; overflow: hidden; }
+    .track { width: 100%; display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 12px; padding: 12px 14px; background: transparent; color: #fff; border: none; cursor: pointer; text-align: left; }
+    .track + .track { border-top: 1px solid rgba(255,255,255,0.06); }
+    .track:hover { background: rgba(255,255,255,0.06); }
+    .track.active { background: rgba(255, 122, 89, 0.22); }
+    .track .order { font-variant-numeric: tabular-nums; opacity: 0.8; }
+    .track .info { display: grid; gap: 2px; }
+    .track .title { font-weight: 700; letter-spacing: -0.01em; }
+    .track .meta { font-size: 12px; opacity: 0.7; }
+    .track .dur { font-variant-numeric: tabular-nums; opacity: 0.85; }
   </style>
 </head>
 <body>
@@ -93,237 +151,178 @@
     </nav>
   </header>
   <main class="container">
-    <div class="controls">
-      <button id="startButton">재생 시작</button>
-    </div>
-    <div id="priorityWrap" class="priority" style="display:none; margin: 8px 0 14px;">
-      <div id="priorityList" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
-    </div>
-    <div class="player-wrap">
-      <iframe
-        id="sc-player"
-        title="SoundCloud player"
-        scrolling="no"
-        allow="autoplay"
-        src="about:blank">
-      </iframe>
+    <div class="album-skin" role="region" aria-label="VISIBLE TRUTH player">
+      <div class="album-cover" aria-hidden="true"></div>
+      <div class="skin-overlay"></div>
+      <div class="skin-controls">
+        <div class="skin-meta">
+          <div class="skin-title">VISIBLE TRUTH</div>
+          <div class="skin-artist">TH3NAME</div>
+        </div>
+        <div class="skin-buttons">
+          <button class="btn btn--prev" aria-label="이전 곡">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 12l12-8v16L6 12z" fill="#fff"/></svg>
+          </button>
+          <button class="btn btn--play" aria-label="재생">
+            <svg class="icon-play" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7L8 5z" fill="#111"/></svg>
+            <svg class="icon-pause" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="#111"/></svg>
+          </button>
+          <button class="btn btn--next" aria-label="다음 곡">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 12L6 20V4l12 8z" fill="#fff"/></svg>
+          </button>
+        </div>
+        <div class="progress" aria-label="재생 진행도" role="slider" tabindex="0">
+          <div class="progress__bar"></div>
+        </div>
+      </div>
+      <iframe id="sc-backend" title="SoundCloud backend" allow="autoplay" style="position:absolute; width:0; height:0; border:0; opacity:0;"></iframe>
     </div>
   </main>
+  <section class="tracks" aria-label="곡 목록">
+    <div id="tracklist" class="tracklist" role="list"></div>
+  </section>
 
   <script src="https://w.soundcloud.com/player/api.js"></script>
   <script>
-    const iframe = document.getElementById('sc-player');
-    const startButton = document.getElementById('startButton');
-    const profileUrl = 'https://soundcloud.com/th3name';
-    // 원하는 재생 순서를 아래 배열에 지정하세요.
-    // 항목은 트랙 ID(숫자) 또는 트랙/세트의 전체 URL을 모두 지원합니다.
-    // 예시)
-    // const customOrder = [
-    //   '2149175430', // api.soundcloud.com/tracks/<id>
-    //   'https://soundcloud.com/th3name/stay-crisp',
-    //   'https://api.soundcloud.com/tracks/2149183224'
-    // ];
-    const customOrder = ['https://soundcloud.com/th3name/stay-crisp?si=bf408ce63ff84163a204ddc529520728&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing'
-    ,'https://soundcloud.com/th3name/midnight-drop?si=0fa7d281a10642cfa322bb9a7bec5401&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing'];
+    const backend = document.getElementById('sc-backend');
+    const playBtn = document.querySelector('.btn--play');
+    const iconPlay = playBtn.querySelector('.icon-play');
+    const iconPause = playBtn.querySelector('.icon-pause');
+    const prevBtn = document.querySelector('.btn--prev');
+    const nextBtn = document.querySelector('.btn--next');
+    const progress = document.querySelector('.progress');
+    const progressBar = document.querySelector('.progress__bar');
+    const trackListEl = document.getElementById('tracklist');
+
+    const playlistUrl = 'https://api.soundcloud.com/playlists/2063852271';
+    const params = new URLSearchParams({
+      url: playlistUrl,
+      auto_play: 'false',
+      hide_related: 'true',
+      show_comments: 'false',
+      show_user: 'false',
+      show_reposts: 'false',
+      show_teaser: 'false',
+      visual: 'false'
+    });
+    backend.src = 'https://w.soundcloud.com/player/?' + params.toString();
 
     let widget = null;
-    let isReady = false;
-    let hasUserStarted = false;
-    let currentVisual = null; // boolean
-    let currentIndex = 0; // custom 순서용
-    let priorityPlan = [];
-    let priorityCursor = 0;
+    let isPlaying = false;
+    let sounds = [];
+    let idToIndex = new Map();
 
-    function buildPlayerSrc(resourceUrl, visual) {
-      const params = new URLSearchParams({
-        url: resourceUrl,
-        auto_play: 'false',
-        hide_related: 'true',
-        show_comments: 'true',
-        show_user: 'true',
-        show_teaser: 'false',
-        visual: visual ? 'true' : 'false'
-      });
-      return 'https://w.soundcloud.com/player/?' + params.toString();
+    function setPlayingUI(playing) {
+      isPlaying = playing;
+      iconPlay.style.display = playing ? 'none' : '';
+      iconPause.style.display = playing ? '' : 'none';
+      playBtn.setAttribute('aria-label', playing ? '일시정지' : '재생');
     }
 
-    function resolveTrackUrl(item) {
-      if (/^https?:\/\//i.test(item)) return item;
-      if (/^\d+$/.test(item)) return 'https://api.soundcloud.com/tracks/' + item;
-      return item; // fallback
-    }
-
-    function stripQuery(u) {
-      try {
-        const x = new URL(u);
-        x.search = '';
-        x.hash = '';
-        return x.toString().replace(/\/$/, '');
-      } catch { return u; }
-    }
-
-    function isUsingCustomOrder() {
-      return Array.isArray(customOrder) && customOrder.length > 0;
-    }
-
-    function currentCustomUrl() {
-      return resolveTrackUrl(customOrder[currentIndex % customOrder.length]);
-    }
-
-    function enableAutoAdvance() {
-      if (!widget) return;
-      try { widget.unbind(SC.Widget.Events.FINISH); } catch (e) {}
-      widget.bind(SC.Widget.Events.FINISH, function () {
-        if (priorityCursor < priorityPlan.length) {
-          const item = priorityPlan[priorityCursor++];
-          if (item.type === 'index') {
-            widget.skip(item.index);
-            widget.play();
-          } else {
-            // fallback: 개별 URL (프로필 외 항목)
-            widget.load(item.url, {
-              auto_play: true,
-              hide_related: true,
-              show_comments: true,
-              show_user: true,
-              show_teaser: false,
-              visual: currentVisual
-            });
-          }
-        } else {
-          widget.next();
-        }
+    function seekByClientX(clientX) {
+      widget.getDuration(function (dur) {
+        const rect = progress.getBoundingClientRect();
+        const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+        widget.seekTo(ratio * dur);
       });
     }
 
-    function startPlayback() {
-      if (!widget) return;
-      enableAutoAdvance();
-      if (priorityPlan.length > 0) {
-        const first = priorityPlan[0];
-        priorityCursor = 1;
-        if (first.type === 'index') {
-          widget.skip(first.index);
-          widget.play();
-        } else {
-          widget.load(first.url, {
-            auto_play: true,
-            hide_related: true,
-            show_comments: true,
-            show_user: true,
-            show_teaser: false,
-            visual: currentVisual
-          });
-        }
-      } else {
-        widget.play();
-      }
-      startButton.setAttribute('hidden', 'true');
-      hasUserStarted = true;
+    function formatDuration(ms) {
+      const totalSec = Math.round((ms || 0) / 1000);
+      const m = Math.floor(totalSec / 60);
+      const s = totalSec % 60;
+      return m + ':' + String(s).padStart(2, '0');
     }
 
-    function onReady() {
-      isReady = true;
-      // 현재 목록 기준으로 우선 항목 매핑
-      if (isUsingCustomOrder()) {
-        widget.getSounds(function (sounds) {
-          const urlToIndex = new Map();
-          const idToIndex = new Map();
-          sounds.forEach((s, i) => {
-            if (s && s.permalink_url) urlToIndex.set(stripQuery(s.permalink_url), i);
-            if (s && s.id != null) idToIndex.set(String(s.id), i);
-          });
-          priorityPlan = customOrder.map((raw) => {
-            const url = resolveTrackUrl(raw);
-            const urlNoQ = stripQuery(url);
-            const idMatch = urlNoQ.match(/\/tracks\/(\d+)/);
-            const id = idMatch ? idMatch[1] : null;
-            let index = null;
-            if (id && idToIndex.has(String(id))) index = idToIndex.get(String(id));
-            else if (urlToIndex.has(urlNoQ)) index = urlToIndex.get(urlNoQ);
-            if (index != null) {
-              const title = sounds[index] && sounds[index].title ? sounds[index].title : '우선 항목';
-              return { type: 'index', index, title };
-            }
-            return { type: 'url', url: urlNoQ, title: '우선 항목(개별)' };
-          });
-          renderPriorityList(priorityPlan);
-          if (hasUserStarted) startPlayback();
-        });
-      } else {
-        priorityPlan = [];
-        document.getElementById('priorityWrap').style.display = 'none';
-        if (hasUserStarted) startPlayback();
-      }
+    function renderTrackList(arr) {
+      trackListEl.innerHTML = '';
+      arr.forEach((s, i) => {
+        const row = document.createElement('button');
+        row.type = 'button';
+        row.className = 'track';
+        row.setAttribute('role', 'listitem');
+        row.dataset.index = String(i);
+
+        const order = document.createElement('span');
+        order.className = 'order';
+        order.textContent = String(i + 1).padStart(2, '0');
+
+        const info = document.createElement('span');
+        info.className = 'info';
+        const title = document.createElement('span');
+        title.className = 'title';
+        title.textContent = s && s.title ? s.title : 'Untitled';
+        const meta = document.createElement('span');
+        meta.className = 'meta';
+        meta.textContent = (s && s.user && s.user.username) ? s.user.username : 'TH3NAME';
+        info.appendChild(title);
+        info.appendChild(meta);
+
+        const dur = document.createElement('span');
+        dur.className = 'dur';
+        dur.textContent = formatDuration(s && s.duration);
+
+        row.appendChild(order);
+        row.appendChild(info);
+        row.appendChild(dur);
+
+        row.addEventListener('click', () => { try { widget.skip(i); widget.play(); } catch (_) {} });
+        trackListEl.appendChild(row);
+      });
     }
 
-    function applyMode(visual) {
-      if (currentVisual === visual) return;
-      currentVisual = visual;
-      iframe.classList.toggle('visual', visual);
-      iframe.classList.toggle('classic', !visual);
-      // 항상 프로필을 로드해 전체 목록을 보여줍니다
-      iframe.src = buildPlayerSrc(profileUrl, visual);
-      // 위젯 재초기화
-      widget = SC.Widget(iframe);
-      isReady = false;
-      widget.bind(SC.Widget.Events.READY, onReady);
+    function setActiveIndex(index) {
+      const rows = trackListEl.querySelectorAll('.track');
+      rows.forEach((el) => el.classList.toggle('active', Number(el.dataset.index) === Number(index)));
     }
-
-    function isMobileVisual() {
-      return window.matchMedia('(max-width: 768px)').matches;
-    }
-
-    function debounce(fn, wait) {
-      let t;
-      return function () {
-        clearTimeout(t);
-        t = setTimeout(fn, wait);
-      };
-    }
-
-    startButton.addEventListener('click', function () {
-      if (isReady) {
-        startPlayback();
-      } else if (widget) {
-        widget.bind(SC.Widget.Events.READY, startPlayback);
-      }
-    });
 
     window.addEventListener('load', function () {
-      applyMode(isMobileVisual());
-      // 가능하면 즉시 재생 시도(차단될 수 있음)
-      setTimeout(function () {
-        enableAutoAdvance();
-        if (widget) widget.play();
-      }, 300);
-    });
-
-    window.addEventListener('resize', debounce(function () {
-      applyMode(isMobileVisual());
-    }, 200));
-
-    function renderPriorityList(plan) {
-      const wrap = document.getElementById('priorityWrap');
-      const list = document.getElementById('priorityList');
-      list.innerHTML = '';
-      if (!plan || plan.length === 0) { wrap.style.display = 'none'; return; }
-      wrap.style.display = '';
-      plan.forEach((item, idx) => {
-        const btn = document.createElement('button');
-        btn.textContent = item.title || `우선 ${idx + 1}`;
-        btn.style.cssText = 'background:#222;border:1px solid rgba(255,255,255,0.15);color:#fff;padding:6px 10px;border-radius:8px;font-size:12px;cursor:pointer;';
-        btn.addEventListener('click', () => {
-          priorityCursor = idx + 1; // 이후 항목부터 이어서
-          if (item.type === 'index') {
-            widget.skip(item.index); widget.play();
-          } else {
-            widget.load(item.url, { auto_play: true, hide_related: true, show_comments: true, show_user: true, show_teaser: false, visual: currentVisual });
-          }
+      widget = SC.Widget(backend);
+      widget.bind(SC.Widget.Events.READY, function () {
+        widget.getSounds(function (arr) {
+          sounds = Array.isArray(arr) ? arr : [];
+          idToIndex = new Map(sounds.map((s, i) => [String(s.id), i]));
+          renderTrackList(sounds);
         });
-        list.appendChild(btn);
+
+        // progress loop
+        widget.bind(SC.Widget.Events.PLAY, function () { setPlayingUI(true); });
+        widget.bind(SC.Widget.Events.PAUSE, function () { setPlayingUI(false); });
+        widget.bind(SC.Widget.Events.FINISH, function () { try { widget.next(); } catch (_) {} });
+        widget.bind(SC.Widget.Events.PLAY_PROGRESS, function (e) {
+          const pct = Math.max(0, Math.min(1, e.relativePosition || 0));
+          progressBar.style.transform = 'scaleX(' + pct + ')';
+        });
+        widget.bind(SC.Widget.Events.PLAY, function () {
+          try {
+            widget.getCurrentSound(function (cur) {
+              const idx = cur && cur.id != null ? idToIndex.get(String(cur.id)) : null;
+              if (idx != null) setActiveIndex(idx);
+            });
+          } catch(_) {}
+        });
       });
-    }
+
+      playBtn.addEventListener('click', function () {
+        if (!widget) return;
+        if (isPlaying) { widget.pause(); } else { widget.play(); }
+      });
+      prevBtn.addEventListener('click', () => { try { widget.prev(); } catch (_) {} });
+      nextBtn.addEventListener('click', () => { try { widget.next(); } catch (_) {} });
+
+      progress.addEventListener('click', (ev) => seekByClientX(ev.clientX));
+      progress.addEventListener('keydown', (ev) => {
+        if (ev.key === 'ArrowLeft' || ev.key === 'ArrowRight') {
+          ev.preventDefault();
+          widget.getDuration((dur) => {
+            widget.getPosition((pos) => {
+              const delta = (ev.key === 'ArrowRight' ? 5 : -5) * 1000; // 5s step
+              widget.seekTo(Math.max(0, Math.min(dur, pos + delta)));
+            });
+          });
+        }
+      });
+    });
   </script>
 </body>
 </html>
