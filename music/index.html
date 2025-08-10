@@ -173,9 +173,9 @@
         </div>
         <div class="progress" aria-label="재생 진행도" role="slider" tabindex="0">
           <div class="progress__bar"></div>
-        </div>
-      </div>
-      <iframe id="sc-backend" title="SoundCloud backend" allow="autoplay" style="position:absolute; width:0; height:0; border:0; opacity:0;"></iframe>
+    </div>
+    </div>
+      <iframe id="sc-backend" title="SoundCloud backend" allow="autoplay" style="position:absolute; width:1px; height:1px; border:0; opacity:0; pointer-events:none;"></iframe>
     </div>
   </main>
   <section class="tracks" aria-label="곡 목록">
@@ -195,20 +195,22 @@
     const trackListEl = document.getElementById('tracklist');
 
     const playlistUrl = 'https://api.soundcloud.com/playlists/2063852271';
-    const params = new URLSearchParams({
+      const params = new URLSearchParams({
       url: playlistUrl,
-      auto_play: 'false',
-      hide_related: 'true',
+        auto_play: 'false',
+        hide_related: 'true',
       show_comments: 'false',
       show_user: 'false',
       show_reposts: 'false',
-      show_teaser: 'false',
+        show_teaser: 'false',
       visual: 'false'
     });
+    // iOS 인앱/사파리에서 사용자 제스처 직후 즉시 초기화되도록 지연 로드하지 않음
     backend.src = 'https://w.soundcloud.com/player/?' + params.toString();
 
     let widget = null;
     let isPlaying = false;
+    let isWidgetReady = false;
     let sounds = [];
     let idToIndex = new Map();
 
@@ -279,6 +281,7 @@
     window.addEventListener('load', function () {
       widget = SC.Widget(backend);
       widget.bind(SC.Widget.Events.READY, function () {
+        isWidgetReady = true;
         widget.getSounds(function (arr) {
           sounds = Array.isArray(arr) ? arr : [];
           idToIndex = new Map(sounds.map((s, i) => [String(s.id), i]));
@@ -305,6 +308,14 @@
 
       playBtn.addEventListener('click', function () {
         if (!widget) return;
+        if (!isWidgetReady) {
+          const onReadyAndPlay = function () {
+            isWidgetReady = true;
+            try { widget.play(); } catch(_) {}
+          };
+          try { widget.bind(SC.Widget.Events.READY, onReadyAndPlay); } catch(_) {}
+          return;
+        }
         if (isPlaying) { widget.pause(); } else { widget.play(); }
       });
       prevBtn.addEventListener('click', () => { try { widget.prev(); } catch (_) {} });
