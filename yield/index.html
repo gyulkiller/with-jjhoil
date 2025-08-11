@@ -938,7 +938,7 @@
       if (!scWidget) return; // very early click before load
       if (!scReady) {
         currentBtn = btn; currentUrl = url; setGroupState(url,'loading');
-        try { scWidget.bind(SC.Widget.Events.READY, function onR(){ scWidget.unbind(SC.Widget.Events.READY, onR); try { scWidget.load(url, { auto_play: true, hide_related: true, show_comments: false, show_user: false, show_reposts: false, show_teaser: false, visual: false }); } catch(_) {} }); } catch(_) {}
+        try { scWidget.bind(SC.Widget.Events.READY, function onR(){ scWidget.unbind(SC.Widget.Events.READY, onR); try { scWidget.load(url, { auto_play: true, hide_related: true, show_comments: false, show_user: false, show_reposts: false, show_teaser: false, visual: false }); fallbackOpenIfBlocked(url); } catch(_) { fallbackOpenIfBlocked(url); } }); } catch(_) { fallbackOpenIfBlocked(url); }
         return;
       }
       // if a different url, load it
@@ -947,16 +947,42 @@
         currentUrl = url;
         currentBtn = btn;
         setGroupState(url,'loading');
-        try { scWidget.load(url, { auto_play: true, hide_related: true, show_comments: false, show_user: false, show_reposts: false, show_teaser: false, visual: false }); } catch(_) {}
+        try { scWidget.load(url, { auto_play: true, hide_related: true, show_comments: false, show_user: false, show_reposts: false, show_teaser: false, visual: false }); fallbackOpenIfBlocked(url); } catch(_) { fallbackOpenIfBlocked(url); }
         return;
       }
       // same url -> toggle
       try {
         scWidget.isPaused(function(paused){
-          if (paused) { setGroupState(url,'loading'); try { scWidget.play(); } catch(_) {} }
+          if (paused) { setGroupState(url,'loading'); try { scWidget.play(); fallbackOpenIfBlocked(url); } catch(_) { fallbackOpenIfBlocked(url); } }
           else { scWidget.pause(); setGroupState(url,'idle'); }
         });
       } catch(_) {}
+    }
+
+    // Hard fallback: if autoplay is blocked after short delay, open SoundCloud in a new tab
+    function fallbackOpenIfBlocked(url){
+      try {
+        const startedAt = Date.now();
+        const check = () => {
+          try {
+            scWidget.isPaused(function(paused){
+              if (!paused) return; // playing
+              if (Date.now() - startedAt > 900) {
+                // Open in new tab/window to guarantee playback
+                window.open(url, '_blank', 'noopener');
+                setGroupState(url, 'idle');
+              } else {
+                setTimeout(check, 200);
+              }
+            });
+          } catch(_) {
+            window.open(url, '_blank', 'noopener');
+          }
+        };
+        setTimeout(check, 400);
+      } catch(_) {
+        try { window.open(url, '_blank', 'noopener'); } catch(__) {}
+      }
     }
 
     function updateButtons() {
