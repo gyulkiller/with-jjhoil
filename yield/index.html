@@ -507,7 +507,8 @@
   <!-- Modals -->
   <!-- SoundCloud API and hidden backend for yield page -->
   <script src="https://w.soundcloud.com/player/api.js"></script>
-  <iframe id="yield-sc-backend" allow="autoplay" title="SoundCloud backend" style="position:absolute; width:1px; height:1px; border:0; opacity:0; pointer-events:none;"></iframe>
+  <iframe id="yield-sc-backend" allow="autoplay" title="SoundCloud backend (legacy)" style="position:absolute; width:1px; height:1px; border:0; opacity:0; pointer-events:none;"></iframe>
+  <div id="sc-pool" style="position:absolute; width:1px; height:1px; overflow:hidden; opacity:0; pointer-events:none;"></div>
   <div class="modal" id="modal-1" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
     <div class="dialog">
       <div class="dialog-header">
@@ -860,6 +861,21 @@
         scWidget.bind(SC.Widget.Events.PLAY, function(){ if (currentUrl) { clearAllPlaying(); setGroupState(currentUrl, 'playing'); } });
         scWidget.bind(SC.Widget.Events.PAUSE, function(){ if (currentUrl) { setGroupState(currentUrl, 'idle'); } });
       } catch(_) {}
+
+      // Pre-warm additional widgets to satisfy strict autoplay gating (some iOS builds)
+      const urls = [
+        'https://soundcloud.com/th3name/stay-crisp?in=th3name/sets/visible-truth',
+        'https://soundcloud.com/th3name/fmfp1fgis0ht?in=th3name/sets/visible-truth'
+      ];
+      urls.forEach((u, i) => {
+        try {
+          const f = document.createElement('iframe');
+          f.allow = 'autoplay';
+          const p = new URLSearchParams({ url: u, auto_play: 'false', hide_related: 'true', show_comments: 'false', show_user: 'false', show_reposts: 'false', show_teaser: 'false', visual: 'false' });
+          f.src = 'https://w.soundcloud.com/player/?' + p.toString();
+          document.getElementById('sc-pool').appendChild(f);
+        } catch(_) {}
+      });
     });
 
     function setGroupState(url, state){
