@@ -866,7 +866,7 @@
     function createWidget(initialUrl){
       const params = new URLSearchParams({
         url: initialUrl,
-        auto_play: 'false',
+        auto_play: 'true',
         hide_related: 'true',
         show_comments: 'false',
         show_user: 'false',
@@ -917,7 +917,7 @@
         setGroupState(url,'loading');
         try {
           scWidget.load(url, {
-            auto_play: false,
+            auto_play: true,
             hide_related: true,
             show_comments: false,
             show_user: false,
