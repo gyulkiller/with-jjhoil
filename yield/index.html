@@ -505,7 +505,8 @@
   </section>
 
   <!-- Modals -->
-  <!-- SoundCloud hidden backend for yield page -->
+  <!-- SoundCloud API and hidden backend for yield page -->
+  <script src="https://w.soundcloud.com/player/api.js"></script>
   <iframe id="yield-sc-backend" allow="autoplay" title="SoundCloud backend" style="position:absolute; width:1px; height:1px; border:0; opacity:0; pointer-events:none;"></iframe>
   <div class="modal" id="modal-1" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
     <div class="dialog">
@@ -866,7 +867,7 @@
     function createWidget(initialUrl){
       const params = new URLSearchParams({
         url: initialUrl,
-        auto_play: 'true',
+        auto_play: 'false',
         hide_related: 'true',
         show_comments: 'false',
         show_user: 'false',
@@ -878,7 +879,10 @@
       scWidget = window.SC && window.SC.Widget ? window.SC.Widget(scIframe) : null;
       if (!scWidget) return;
       try {
-        scWidget.bind(window.SC.Widget.Events.READY, function(){ scReady = true; if(currentUrl){ setGroupState(currentUrl,'loading'); tryPlayWithRetry(5000); } });
+        scWidget.bind(window.SC.Widget.Events.READY, function(){
+          scReady = true;
+          if(currentUrl){ setGroupState(currentUrl,'loading'); try { scWidget.play(); } catch(_) {} }
+        });
         scWidget.bind(window.SC.Widget.Events.PLAY, function(){
           if (currentUrl) {
             clearAllPlaying();
@@ -917,7 +921,7 @@
         setGroupState(url,'loading');
         try {
           scWidget.load(url, {
-            auto_play: true,
+            auto_play: false,
             hide_related: true,
             show_comments: false,
             show_user: false,
@@ -925,14 +929,14 @@
             show_teaser: false,
             visual: false
           });
-          tryPlayWithRetry(5000);
+          try { scWidget.play(); } catch(_) {}
         } catch(_) {}
         return;
       }
       // same url -> toggle
       try {
         scWidget.isPaused(function(paused){
-          if (paused) { setGroupState(url,'loading'); tryPlayWithRetry(4000); }
+          if (paused) { setGroupState(url,'loading'); try { scWidget.play(); } catch(_) {} }
           else { scWidget.pause(); setGroupState(url,'idle'); }
         });
       } catch(_) {}
