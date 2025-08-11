@@ -866,7 +866,7 @@
     function createWidget(initialUrl){
       const params = new URLSearchParams({
         url: initialUrl,
-        auto_play: 'true',
+        auto_play: 'false',
         hide_related: 'true',
         show_comments: 'false',
         show_user: 'false',
@@ -878,7 +878,7 @@
       scWidget = window.SC && window.SC.Widget ? window.SC.Widget(scIframe) : null;
       if (!scWidget) return;
       try {
-        scWidget.bind(window.SC.Widget.Events.READY, function(){ scReady = true; if(currentUrl){ setGroupState(currentUrl,'idle'); } });
+        scWidget.bind(window.SC.Widget.Events.READY, function(){ scReady = true; if(currentUrl){ setGroupState(currentUrl,'loading'); tryPlayWithRetry(5000); } });
         scWidget.bind(window.SC.Widget.Events.PLAY, function(){
           if (currentUrl) {
             clearAllPlaying();
@@ -889,6 +889,21 @@
           if (currentUrl) { setGroupState(currentUrl,'idle'); }
         });
       } catch(_){}
+    }
+
+    function tryPlayWithRetry(timeoutMs){
+      const start = Date.now();
+      const attempt = () => {
+        try { scWidget.play(); } catch(_) {}
+        try {
+          scWidget.isPaused(function(paused){
+            if (!paused) return; // playing started
+            if (Date.now() - start > timeoutMs) { setGroupState(currentUrl,'idle'); return; }
+            setTimeout(attempt, 300);
+          });
+        } catch(_) { if (Date.now() - start <= timeoutMs) setTimeout(attempt, 300); }
+      };
+      attempt();
     }
 
     function loadAndPlay(url, btn){
@@ -902,7 +917,7 @@
         setGroupState(url,'loading');
         try {
           scWidget.load(url, {
-            auto_play: true,
+            auto_play: false,
             hide_related: true,
             show_comments: false,
             show_user: false,
@@ -910,13 +925,14 @@
             show_teaser: false,
             visual: false
           });
+          tryPlayWithRetry(5000);
         } catch(_) {}
         return;
       }
       // same url -> toggle
       try {
         scWidget.isPaused(function(paused){
-          if (paused) { setGroupState(url,'loading'); scWidget.play(); }
+          if (paused) { setGroupState(url,'loading'); tryPlayWithRetry(4000); }
           else { scWidget.pause(); setGroupState(url,'idle'); }
         });
       } catch(_) {}
