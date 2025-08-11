@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RECIPE | #양심깨박 인스타그램 피드</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      :root { --page-max: 1200px; --gap: 16px; --card-r: 16px; --shadow: 0 10px 30px rgba(0,0,0,0.08); }
+      body { background: #ffffff; color: #1d1d1f; }
+
+      .page { max-width: var(--page-max); margin: calc(var(--header-h,56px) + 24px) auto 48px; padding: 0 18px; }
+      .page-header { display: grid; gap: 8px; margin-bottom: 18px; }
+      .page-title { font-size: clamp(24px, 2.8vw, 34px); letter-spacing: -0.02em; font-weight: 800; }
+      .page-desc { color: #5f5f62; }
+
+      /* settings bar */
+      .settings {
+        display: grid; gap: 10px; grid-template-columns: 1fr; align-items: center;
+        padding: 12px; border: 1px solid rgba(0,0,0,0.08); border-radius: 14px; background: #fafafa;
+        margin: 18px 0 22px; overflow: hidden;
+      }
+      .settings .row { display: grid; gap: 10px; grid-template-columns: 1fr; }
+      .settings label { font-size: 12px; color: #6b6b6e; }
+      .settings input {
+        width: 100%; height: 40px; padding: 0 12px; border-radius: 10px;
+        border: 1px solid rgba(0,0,0,0.15); background: #fff; font-size: 14px;
+      }
+      .settings .actions { display: inline-flex; gap: 10px; align-items: center; }
+      .btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 14px;
+        border-radius: 999px; border: 1px solid rgba(0,0,0,0.12); background: #fff; color: #111; font-weight: 600; cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.2s ease; box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+      }
+      .btn.primary { background: #111; color: #fff; border-color: #111; }
+      .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(0,0,0,0.10); }
+      .help { font-size: 12px; color: #6b6b6e; }
+
+      @media (min-width: 860px) {
+        .settings { grid-template-columns: 1fr auto; }
+        .settings .row { grid-template-columns: 1fr 1fr; }
+      }
+
+      /* gallery */
+      .gallery { display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+      .card {
+        position: relative; border-radius: var(--card-r); overflow: hidden; background: #fff; border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: var(--shadow); transform: translateZ(0);
+      }
+      .card::after { /* subtle border fade */ content: ""; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5); }
+      .media { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; background: #f2f2f2; }
+      .overlay { position: absolute; inset: auto 0 0 0; padding: 12px; color: #fff; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.72) 90%); }
+      .cap { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 14px; opacity: 0.95; }
+      .meta { margin-top: 6px; font-size: 12px; opacity: 0.82; }
+      .badge {
+        position: absolute; top: 10px; left: 10px; display: inline-flex; gap: 6px; align-items: center;
+        height: 28px; padding: 0 10px; border-radius: 999px; background: rgba(17,17,17,0.75); color: #fff; font-size: 12px; font-weight: 700;
+        backdrop-filter: blur(6px);
+      }
+      .card-link { position: absolute; inset: 0; }
+
+      /* skeletons */
+      .skeleton-grid { display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+      .skeleton { border-radius: var(--card-r); overflow: hidden; background: #f2f2f2; position: relative; aspect-ratio: 1 / 1; }
+      .skeleton::before {
+        content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.55), rgba(255,255,255,0));
+        transform: translateX(-100%); animation: shimmer 1.3s infinite;
+      }
+      @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+      /* load more */
+      .more { display: grid; place-items: center; margin-top: 18px; }
+      .hidden { display: none !important; }
+
+      /* error */
+      .error { margin-top: 10px; color: #b00020; font-weight: 600; }
+    </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9C4N2TREHT"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);} 
+      gtag('js', new Date());
+      gtag('config', 'G-9C4N2TREHT');
+    </script>
+  </head>
+  <body>
+    <header class="site-header" role="navigation" aria-label="Primary Navigation">
+      <nav class="nav">
+        <a class="brand" href="/"><img class="brand-logo" src="../svg/onlyu.svg" alt="그이름 로고" />&nbsp;함께 WITH</a>
+        <ul class="nav-menu">
+          <li><a href="/music">MUSIC</a></li>
+          <li><a href="/yield">YIELD</a></li>
+          <li><a href="/recipe">RECIPE</a></li>
+          <li><a href="https://jjhoil.com">SHOP</a></li>
+        </ul>
+        <button class="nav-toggle" aria-label="메뉴 열기" aria-controls="mobileMenu" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </nav>
+    </header>
+    <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+      <div class="mm-inner">
+        <div class="mm-header">
+          <button class="mm-close" aria-label="메뉴 닫기">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <nav>
+          <ul>
+            <li><a href="/music">MUSIC</a></li>
+            <li><a href="/yield">YIELD</a></li>
+            <li><a href="/recipe">RECIPE</a></li>
+            <li><a href="https://jjhoil.com">SHOP</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <main class="page">
+      <div class="page-header">
+        <h1 class="page-title">인스타그램 #양심깨박</h1>
+        <p class="page-desc">계정 <a href="https://instagram.com/thenames_kr" target="_blank" rel="noreferrer noopener">@thenames_kr</a>의 게시물 중 해시태그가 포함된 콘텐츠만 선별해 보여드립니다.</p>
+      </div>
+
+      <section class="settings" id="settings">
+        <div class="row">
+          <div>
+            <label for="userId">Instagram User ID</label>
+            <input id="userId" type="text" inputmode="numeric" placeholder="예: 17841400000000000" />
+          </div>
+          <div>
+            <label for="accessToken">Access Token</label>
+            <input id="accessToken" type="password" placeholder="여기에 Instagram Basic Display API 토큰을 붙여 넣기" />
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="saveBtn">저장하고 불러오기</button>
+          <button class="btn" id="clearBtn" title="로컬에 저장된 자격정보 삭제">초기화</button>
+        </div>
+        <p class="help">개인/크리에이터 계정의 <strong>Basic Display API</strong> 토큰으로 작동합니다. 장기 토큰을 발급 받아 붙여 넣으면 브라우저의 저장소에 보관됩니다. 공개 저장소에 토큰을 커밋하지 마세요.</p>
+      </section>
+
+      <div id="loading" class="skeleton-grid" aria-hidden="true"></div>
+      <div id="gallery" class="gallery hidden" aria-live="polite"></div>
+      <div class="more hidden" id="moreWrap"><button class="btn" id="moreBtn">더 불러오기</button></div>
+      <p class="error" id="error" role="alert" hidden></p>
+    </main>
+
+    <script>
+      // mobile menu interactions (shared pattern)
+      (function(){
+        const toggle = document.querySelector('.nav-toggle');
+        const menu = document.getElementById('mobileMenu');
+        const closeBtn = menu?.querySelector('.mm-close');
+        function open(){ menu?.classList.add('open'); document.body.classList.add('menu-open'); toggle?.setAttribute('aria-expanded','true'); menu?.setAttribute('aria-hidden','false'); }
+        function close(){ menu?.classList.remove('open'); document.body.classList.remove('menu-open'); toggle?.setAttribute('aria-expanded','false'); menu?.setAttribute('aria-hidden','true'); }
+        toggle?.addEventListener('click', open);
+        closeBtn?.addEventListener('click', close);
+        menu?.addEventListener('click', (e)=>{ if(e.target===menu) close(); });
+        window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
+      })();
+
+      const HASHTAG = '#양심깨박';
+      const $gallery = document.getElementById('gallery');
+      const $loading = document.getElementById('loading');
+      const $error = document.getElementById('error');
+      const $moreWrap = document.getElementById('moreWrap');
+      const $moreBtn = document.getElementById('moreBtn');
+      const $userId = document.getElementById('userId');
+      const $accessToken = document.getElementById('accessToken');
+      const $saveBtn = document.getElementById('saveBtn');
+      const $clearBtn = document.getElementById('clearBtn');
+
+      // helpers
+      const ls = {
+        get kUser(){ return 'ig_user_id'; },
+        get kToken(){ return 'ig_access_token'; },
+        get user(){ return localStorage.getItem(this.kUser) || ''; },
+        set user(v){ localStorage.setItem(this.kUser, v || ''); },
+        get token(){ return localStorage.getItem(this.kToken) || ''; },
+        set token(v){ localStorage.setItem(this.kToken, v || ''); },
+        clear(){ localStorage.removeItem(this.kUser); localStorage.removeItem(this.kToken); }
+      };
+
+      function setError(msg){
+        $error.textContent = msg; $error.hidden = !msg;
+      }
+
+      function showLoadingSkeletons(count){
+        $loading.innerHTML = '';
+        for(let i=0;i<count;i++){
+          const s = document.createElement('div');
+          s.className = 'skeleton';
+          $loading.appendChild(s);
+        }
+      }
+
+      function formatDate(iso){
+        try {
+          const d = new Date(iso);
+          return new Intl.DateTimeFormat('ko', { year:'numeric', month:'short', day:'numeric'}).format(d);
+        } catch { return ''; }
+      }
+
+      function captionMatchesHashtag(caption){
+        if(!caption) return false;
+        const c = (caption + '').toLowerCase();
+        return c.includes(HASHTAG.toLowerCase());
+      }
+
+      function createCard(media){
+        const isVideo = media.media_type === 'VIDEO';
+        const imgSrc = isVideo ? (media.thumbnail_url || media.media_url) : media.media_url;
+        const a = document.createElement('a');
+        a.href = media.permalink; a.target = '_blank'; a.rel = 'noreferrer noopener';
+        a.className = 'card';
+
+        const img = document.createElement('img');
+        img.className = 'media'; img.loading = 'lazy'; img.alt = media.caption ? media.caption.replace(/\n/g,' ').slice(0,120) : 'Instagram media';
+        img.src = imgSrc;
+        a.appendChild(img);
+
+        if(isVideo){
+          const b = document.createElement('div');
+          b.className = 'badge'; b.textContent = 'VIDEO';
+          a.appendChild(b);
+        }
+
+        const ov = document.createElement('div'); ov.className = 'overlay';
+        const cap = document.createElement('div'); cap.className = 'cap'; cap.textContent = (media.caption || '').replace(/\n/g,' ');
+        const meta = document.createElement('div'); meta.className = 'meta'; meta.textContent = formatDate(media.timestamp);
+        ov.appendChild(cap); ov.appendChild(meta);
+        a.appendChild(ov);
+
+        return a;
+      }
+
+      // Instagram Basic Display API
+      let nextUrl = '';
+      let loading = false;
+
+      function buildFirstUrl(userId, token){
+        const base = `https://graph.instagram.com/${encodeURIComponent(userId)}/media`;
+        const fields = 'id,caption,media_type,media_url,thumbnail_url,permalink,timestamp';
+        const params = new URLSearchParams({ fields, access_token: token, limit: '50' });
+        return `${base}?${params.toString()}`;
+      }
+
+      async function fetchPage(url){
+        const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        if(!res.ok){ throw new Error(`Instagram API 오류 (${res.status})`); }
+        return res.json();
+      }
+
+      async function loadMore(){
+        if(loading || !nextUrl) return;
+        loading = true;
+        setError('');
+        $moreWrap.classList.add('hidden');
+        try {
+          const data = await fetchPage(nextUrl);
+          const matched = (data.data || []).filter(m => captionMatchesHashtag(m.caption));
+          if(matched.length){
+            const frag = document.createDocumentFragment();
+            matched.forEach(m => frag.appendChild(createCard(m)));
+            $gallery.appendChild(frag);
+          }
+          nextUrl = data.paging?.next || '';
+          if(nextUrl){ $moreWrap.classList.remove('hidden'); }
+        } catch (e){ setError(e.message || '불러오기에 실패했어요.'); }
+        finally { loading = false; }
+      }
+
+      async function bootstrap(){
+        // preset from localStorage or querystring
+        const params = new URLSearchParams(location.search);
+        const qUser = params.get('user_id') || '';
+        const qToken = params.get('token') || '';
+        if(qUser && qToken){ ls.user = qUser; ls.token = qToken; }
+        $userId.value = ls.user; $accessToken.value = ls.token;
+
+        if(!ls.user || !ls.token){
+          // show helper and stop
+          $gallery.classList.add('hidden');
+          $moreWrap.classList.add('hidden');
+          $loading.innerHTML = '';
+          showLoadingSkeletons(8);
+          return;
+        }
+
+        // initial load
+        $gallery.innerHTML = '';
+        $gallery.classList.add('hidden');
+        showLoadingSkeletons(12);
+        setError('');
+        nextUrl = buildFirstUrl(ls.user, ls.token);
+        try {
+          const data = await fetchPage(nextUrl);
+          const matched = (data.data || []).filter(m => captionMatchesHashtag(m.caption));
+          $loading.innerHTML = '';
+          if(matched.length){
+            const frag = document.createDocumentFragment();
+            matched.forEach(m => frag.appendChild(createCard(m)));
+            $gallery.appendChild(frag);
+            $gallery.classList.remove('hidden');
+          } else {
+            setError('해시태그가 포함된 게시물을 찾지 못했어요.');
+          }
+          nextUrl = data.paging?.next || '';
+          if(nextUrl){ $moreWrap.classList.remove('hidden'); } else { $moreWrap.classList.add('hidden'); }
+        } catch(e){
+          $loading.innerHTML = '';
+          setError(e.message || '인스타그램 데이터를 불러오지 못했어요.');
+        }
+      }
+
+      $saveBtn.addEventListener('click', () => {
+        ls.user = ($userId.value || '').trim();
+        ls.token = ($accessToken.value || '').trim();
+        bootstrap();
+      });
+      $clearBtn.addEventListener('click', () => {
+        ls.clear();
+        $userId.value = '';
+        $accessToken.value = '';
+        $gallery.innerHTML = '';
+        $moreWrap.classList.add('hidden');
+        $loading.innerHTML = '';
+        setError('저장된 설정을 지웠습니다. 토큰과 유저ID를 입력하세요.');
+      });
+      $moreBtn.addEventListener('click', loadMore);
+
+      // initial skeletons and boot
+      showLoadingSkeletons(8);
+      bootstrap();
+    </script>
+  </body>
+  </html>
