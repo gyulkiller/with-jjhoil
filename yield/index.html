@@ -959,31 +959,7 @@
       } catch(_) {}
     }
 
-    // Hard fallback: if autoplay is blocked after short delay, open SoundCloud in a new tab
-    function fallbackOpenIfBlocked(url){
-      try {
-        const startedAt = Date.now();
-        const check = () => {
-          try {
-            scWidget.isPaused(function(paused){
-              if (!paused) return; // playing
-              if (Date.now() - startedAt > 900) {
-                // Open in new tab/window to guarantee playback
-                window.open(url, '_blank', 'noopener');
-                setGroupState(url, 'idle');
-              } else {
-                setTimeout(check, 200);
-              }
-            });
-          } catch(_) {
-            window.open(url, '_blank', 'noopener');
-          }
-        };
-        setTimeout(check, 400);
-      } catch(_) {
-        try { window.open(url, '_blank', 'noopener'); } catch(__) {}
-      }
-    }
+    // Remove window.open fallback to prevent unwanted new tabs on iOS
 
     function updateButtons() {
       const scrollLeft = track.scrollLeft;
