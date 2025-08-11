@@ -568,16 +568,28 @@
               ? previousPlayIndex
               : (currentIndex ?? 0);
 
-            // 한 곡 반복만 직접 처리
+            // 한 곡 반복: 동일 인덱스 재생
             if (repeatMode === 'one') {
               const target = (typeof finishedIndex === 'number') ? finishedIndex : 0;
               try { widget.skip(target); widget.play(); } catch(_) {}
               return;
             }
 
-            // 마지막 곡 + 반복 꺼짐이면 정지만 처리. 그 외는 위젯 자동 이동에 맡김
             const total = sounds.length;
             const lastIndex = total > 0 ? total - 1 : -1;
+
+            // 전체 반복: 마지막에서 처음(혹은 다음 재생 가능 곡)으로 래핑
+            if (repeatMode === 'all') {
+              const nextIdx = findNextPlayableIndex(finishedIndex, 'all');
+              // 래핑이 필요한 경우에만 수동 이동 (중간 곡에서는 위젯의 자동 이동 사용)
+              if (nextIdx != null && nextIdx <= finishedIndex) {
+                try { widget.skip(nextIdx); widget.play(); } catch(_) {}
+                return;
+              }
+              // 그 외 케이스(중간 곡 종료)는 위젯 자동 이동에 맡김
+            }
+
+            // 반복 꺼짐 상태에서 마지막 곡이면 정지 UI 반영
             if (finishedIndex >= lastIndex && repeatMode !== 'all') {
               setPlayingUI(false);
             }
