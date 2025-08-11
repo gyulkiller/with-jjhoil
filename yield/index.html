@@ -845,6 +845,26 @@
     }
     indexMusicButtons();
 
+    // iOS audio unlock helper
+    let audioUnlocked = false;
+    let audioCtx = null;
+    function unlockAudio(){
+      return new Promise((resolve)=>{
+        if (audioUnlocked) return resolve();
+        try {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) {
+            audioCtx = audioCtx || new AC();
+            if (audioCtx.state === 'suspended') {
+              audioCtx.resume().catch(()=>{}).finally(()=>{ audioUnlocked = true; resolve(); });
+              return;
+            }
+          }
+        } catch(_) {}
+        audioUnlocked = true; resolve();
+      });
+    }
+
     function setGroupState(url, state){
       const list = urlToButtons.get(url) || [];
       list.forEach((b)=>{
@@ -972,7 +992,10 @@
     nextBtn.addEventListener('click', () => scrollToIndex(getCurrentIndex() + 1));
     // attach click to music button
     document.querySelectorAll('.music-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => { e.stopPropagation(); indexMusicButtons(); loadAndPlay(btn.getAttribute('data-sc-url'), btn); });
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        unlockAudio().then(() => { indexMusicButtons(); loadAndPlay(btn.getAttribute('data-sc-url'), btn); });
+      });
     });
     track.addEventListener('scroll', () => { requestAnimationFrame(updateButtons); });
     window.addEventListener('resize', updateButtons);
