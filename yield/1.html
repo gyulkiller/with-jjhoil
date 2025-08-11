@@ -351,7 +351,7 @@
       <article class="value-card">
         <div class="v-icon">📚</div>
         <h3 class="v-title">교육·사회적 가치</h3>
-        <p class="v-desc">‘버려지는 부분’에 대한 인식을 바꾸는 교육과 체험으로 지속가능한 식문화 전환을 돕습니다.</p>
+        <p class="v-desc">‘버려지는 부분'에 대한 인식을 바꾸는 교육과 체험으로 지속가능한 식문화 전환을 돕습니다.</p>
       </article>
       <article class="value-card">
         <div class="v-icon">🌱</div>
@@ -995,7 +995,11 @@
                 }
                 // 여전히 일시정지 상태면 재시도
                 if (Date.now() - start > timeoutMs) { 
-                  setGroupState(currentUrl, 'idle'); 
+                  setGroupState(currentUrl,'idle'); 
+                  // 재생 실패 시 새 탭으로 사운드클라우드 링크 열기 (iOS fallback)
+                  if(isIOS && currentUrl){
+                    window.open(currentUrl, '_blank');
+                  }
                   return; 
                 }
                 setTimeout(attempt, 300);
@@ -1021,7 +1025,7 @@
             scWidget.unbind(SC.Widget.Events.READY, onR); 
             try { 
               scWidget.load(url, { 
-                auto_play: false, // iOS에서는 자동재생이 안되므로 false로 설정
+                auto_play: isIOS ? true : false, // iOS에서는 자동재생이 안되므로 false로 설정
                 hide_related: true, 
                 show_comments: false, 
                 show_user: false, 
@@ -1049,7 +1053,7 @@
         setGroupState(url,'loading');
         try { 
           scWidget.load(url, { 
-            auto_play: false, // iOS에서는 자동재생이 안되므로 false로 설정
+            auto_play: isIOS ? true : false, // iOS에서는 자동재생이 안되므로 false로 설정
             hide_related: true, 
             show_comments: false, 
             show_user: false, 
