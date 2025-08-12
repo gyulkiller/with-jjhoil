@@ -58,7 +58,7 @@
     .card { position: relative; border-radius: var(--radius-outer); overflow: hidden; background: var(--card-bg); border: 1px solid var(--card-border); box-shadow: 0 10px 30px rgba(0,0,0,.08); cursor: pointer; }
     .thumb { aspect-ratio: 4 / 3; width: 100%; background: #f5f5f7; display:block; object-fit: cover; }
     .meta { padding: 14px 16px 16px; display:grid; gap: 6px; }
-    .eyebrow { font-size: 12px; color: var(--muted); letter-spacing: .02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    /* eyebrow(발행시각) 제거 */
     .title { font-size: 18px; font-weight: 800; color: var(--ink); line-height: 1.25; }
     .chips { display:flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
     .chip { font-size: 12px; padding: 4px 8px; background:#f2f2f7; color:#222; border-radius:999px; }
@@ -79,7 +79,6 @@
     .dialog-visual img { width: 100%; height: auto; display:block; border-radius: 12px; }
     .caption { white-space: pre-wrap; line-height: 1.7; color: #222; }
     .ig-link { display:inline-flex; align-items:center; gap:8px; margin-top: 8px; font-weight: 600; }
-    .timestamp { color: var(--muted); font-size: 12px; }
   </style>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-9C4N2TREHT"></script>
@@ -155,7 +154,6 @@
       <div class="dialog-body">
         <div class="dialog-visual"><img id="dialogImage" alt="레시피 이미지" /></div>
         <div>
-          <div class="timestamp" id="dialogTime"></div>
           <div class="caption" id="dialogCaption"></div>
           <p><a class="ig-link" id="dialogLink" target="_blank" rel="noopener">Instagram에서 보기 →</a></p>
         </div>
@@ -183,9 +181,7 @@
       const firstLine = t.split(/\r?\n/)[0] || '';
       return stripTags(firstLine).replace(/^\p{P}+/u,'').trim() || '레시피';
     }
-    function fmtTime(iso) {
-      try { return new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso)); } catch { return ''; }
-    }
+    // 발행시각 미노출 → 포맷 함수 제거
     function createCard(item) {
       const card = document.createElement('article');
       card.className = 'card';
@@ -197,11 +193,10 @@
       img.src = item.media_url;
       img.alt = deriveTitle(item.caption) || '레시피 이미지';
       const meta = document.createElement('div'); meta.className = 'meta';
-      const eyebrow = document.createElement('div'); eyebrow.className = 'eyebrow'; eyebrow.textContent = fmtTime(item.timestamp);
       const title = document.createElement('h3'); title.className = 'title'; title.textContent = deriveTitle(item.caption);
       const chips = document.createElement('div'); chips.className = 'chips';
       extractHashtags(item.caption).forEach(tag => { const c = document.createElement('span'); c.className = 'chip'; c.textContent = tag; chips.appendChild(c); });
-      meta.appendChild(eyebrow); meta.appendChild(title); if (chips.childElementCount) meta.appendChild(chips);
+      meta.appendChild(title); if (chips.childElementCount) meta.appendChild(chips);
       card.appendChild(img); card.appendChild(meta);
       const open = () => openModal(item);
       card.addEventListener('click', open);
@@ -255,8 +250,7 @@
     function openModal(item) {
       const m = document.getElementById('recipeModal');
       document.getElementById('dialogTitle').textContent = deriveTitle(item.caption);
-      const img = document.getElementById('dialogImage'); img.src = item.media_url; img.alt = deriveTitle(item.caption);
-      document.getElementById('dialogTime').textContent = fmtTime(item.timestamp);
+       const img = document.getElementById('dialogImage'); img.src = item.media_url; img.alt = deriveTitle(item.caption);
       document.getElementById('dialogCaption').textContent = item.caption || '';
       const a = document.getElementById('dialogLink'); a.href = item.permalink; a.setAttribute('href', item.permalink);
       m.classList.add('open');
