@@ -174,9 +174,74 @@
     .track .meta { font-size: 12px; opacity: 0.7; }
     .track .dur { font-variant-numeric: tabular-nums; opacity: 0.85; }
 
+    /* Tracklist loading skeleton */
+    .tracklist.is-loading { padding: 12px; display: grid; gap: 10px; }
+    .skeleton-row {
+      display: grid; grid-template-columns: 32px 1fr 48px; align-items: center; gap: 12px;
+      height: 48px;
+    }
+    .s-order,
+    .s-duration,
+    .s-line {
+      background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.16), rgba(255,255,255,0.06));
+      background-size: 200% 100%;
+      animation: shimmer 1.15s infinite linear;
+    }
+    .s-order { width: 28px; height: 28px; border-radius: 999px; }
+    .s-lines { display: grid; gap: 8px; }
+    .s-line { height: 12px; border-radius: 6px; }
+    .s-line.s-title { width: 68%; }
+    .s-line.s-sub { width: 40%; opacity: 0.8; }
+    .s-duration { width: 38px; height: 14px; border-radius: 999px; justify-self: end; }
+
+    @keyframes shimmer {
+      0% { background-position: 0% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    /* Share CTA */
+    .share-cta { grid-column: 1 / -1; }
+    .btn--share {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 18px; border-radius: 12px; border: 0; cursor: pointer;
+      background: linear-gradient(90deg, #ffd24d, #ff7a59);
+      color: #111; font-weight: 800; font-size: 16px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.35);
+      transition: transform .15s ease, box-shadow .2s ease;
+    }
+    .btn--share:hover { transform: translateY(-1px); box-shadow: 0 14px 36px rgba(0,0,0,0.45); }
+    .btn--share:active { transform: translateY(0); }
+    .btn--share svg { color: #111; }
+
+    /* Share icon overlay on player */
+    .btn--share-overlay { position: absolute; top: 12px; right: 12px; z-index: 2; }
+    .btn--share-overlay svg { color: currentColor; }
+
     /* Footer note */
     .site-footer { padding: 18px 0 28px; text-align: center; }
     .site-footer .note { font-size: 12px; color: rgba(255,255,255,0.6); padding: 0 20px; }
+    .site-footer .note-ko {
+      display: grid;
+      gap: 6px;
+      font-size: clamp(22px, 4.2vw, 44px);
+      color: #fff;
+      padding: 0 20px 10px;
+      line-height: 1.18;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      max-width: 980px;
+      margin: 0 auto 4px;
+    }
+    .site-footer .note-ko .line { display: block; }
+    .site-footer .note-ko .line:nth-child(2) { opacity: 0.94; }
+    .site-footer .note-ko .line:nth-child(3) { opacity: 0.9; }
+    .site-footer .note-ko .hl {
+      background: linear-gradient(90deg, #ffffff 0%, #ffd24d 55%, #ff7a59 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
   </style>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-9C4N2TREHT"></script>
@@ -222,6 +287,13 @@
   </div>
   <main class="container music-layout">
     <div class="album-skin" role="region" aria-label="VISIBLE TRUTH player">
+      <button type="button" class="btn btn--share-overlay" aria-label="이 페이지 공유" title="이 페이지 공유">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M4 12v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 6l-4-4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 2v14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
       <div class="album-cover" aria-hidden="true"></div>
       <div class="skin-overlay"></div>
       <div class="skin-controls">
@@ -256,11 +328,57 @@
       <iframe id="sc-backend" title="SoundCloud backend" allow="autoplay" style="position:absolute; width:1px; height:1px; border:0; opacity:0; pointer-events:none;"></iframe>
     </div>
     <aside class="tracks" aria-label="곡 목록">
-      <div id="tracklist" class="tracklist" role="list"></div>
+      <div id="tracklist" class="tracklist is-loading" role="list" aria-busy="true" aria-live="polite">
+        <div class="skeleton-row">
+          <div class="s-order"></div>
+          <div class="s-lines">
+            <div class="s-line s-title"></div>
+            <div class="s-line s-sub"></div>
+          </div>
+          <div class="s-duration"></div>
+        </div>
+        <div class="skeleton-row">
+          <div class="s-order"></div>
+          <div class="s-lines">
+            <div class="s-line s-title"></div>
+            <div class="s-line s-sub"></div>
+          </div>
+          <div class="s-duration"></div>
+        </div>
+        <div class="skeleton-row">
+          <div class="s-order"></div>
+          <div class="s-lines">
+            <div class="s-line s-title"></div>
+            <div class="s-line s-sub"></div>
+          </div>
+          <div class="s-duration"></div>
+        </div>
+        <div class="skeleton-row">
+          <div class="s-order"></div>
+          <div class="s-lines">
+            <div class="s-line s-title"></div>
+            <div class="s-line s-sub"></div>
+          </div>
+          <div class="s-duration"></div>
+        </div>
+        <div class="skeleton-row">
+          <div class="s-order"></div>
+          <div class="s-lines">
+            <div class="s-line s-title"></div>
+            <div class="s-line s-sub"></div>
+          </div>
+          <div class="s-duration"></div>
+        </div>
+      </div>
     </aside>
   </main>
 
   <footer class="site-footer" role="contentinfo">
+    <div class="note note-ko">
+      <span class="line"><span class="hl">양심의 결</span>을 음악에 담았습니다.</span>
+      <span class="line">새로운 기술이 그 결에 <span class="hl">상상의 숨</span>을 더해,</span>
+      <span class="line">이곳에서만 들을 수 있는 <span class="hl">양심기름의 특별한 이야기</span>들을 만들었습니다.</span>
+    </div>
     <div class="note">New technology has infused the value of conscience with the breath of imagination. Created with AI collaboration.</div>
   </footer>
 
@@ -271,6 +389,41 @@
       6: { title: 'Seed of the End', durationMs: 232000 },
       7: { title: '생명을 일으키는 밑거름', durationMs: 265000 }
     };
+  </script>
+  <script>
+    // Share button logic with Web Share API + clipboard fallback
+    (function(){
+      const shareBtn = document.querySelector('.btn--share-overlay') || document.querySelector('.btn--share');
+      if (!shareBtn) return;
+      function getShareData(){
+        const url = window.location.href;
+        const title = document.title || '함께 WITH - MUSIC';
+        const text = 'TH3NAME - VISIBLE TRUTH 플레이리스트를 함께 들어요.';
+        return { title, text, url };
+      }
+      async function copyToClipboard(text){
+        try {
+          await navigator.clipboard.writeText(text);
+          if (shareBtn.querySelector('span')) {
+            shareBtn.querySelector('span').textContent = '링크 복사됨!';
+            setTimeout(()=>{ shareBtn.querySelector('span').textContent = '이 페이지 공유'; }, 1600);
+          } else {
+            shareBtn.classList.add('active');
+            setTimeout(()=>{ shareBtn.classList.remove('active'); }, 800);
+          }
+        } catch (_) {
+          alert('링크 복사에 실패했습니다. 직접 복사해 주세요:\n' + text);
+        }
+      }
+      shareBtn.addEventListener('click', async function(){
+        const data = getShareData();
+        if (navigator.share) {
+          try { await navigator.share(data); } catch(_) {}
+        } else {
+          copyToClipboard(data.url);
+        }
+      });
+    })();
   </script>
   <script>
     const backend = document.getElementById('sc-backend');
@@ -555,6 +708,12 @@
         widget.getSounds(function (arr) {
           sounds = Array.isArray(arr) ? arr : [];
           idToIndex = new Map(sounds.map((s, i) => [String(s.id), i]));
+          // remove skeleton loading state
+          try {
+            const tl = document.getElementById('tracklist');
+            tl?.classList.remove('is-loading');
+            tl?.setAttribute('aria-busy', 'false');
+          } catch(_) {}
           renderTrackList(sounds);
         });
 
